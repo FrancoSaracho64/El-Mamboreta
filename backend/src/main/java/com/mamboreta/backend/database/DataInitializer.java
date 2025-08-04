@@ -1,7 +1,7 @@
 package com.mamboreta.backend.database;
 
 import com.mamboreta.backend.entity.Producto;
-import com.mamboreta.backend.repository.ProductRepository;
+import com.mamboreta.backend.repository.ProductoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -27,7 +27,7 @@ public class DataInitializer {
      * @return Una instancia de CommandLineRunner.
      */
     @Bean
-    public CommandLineRunner initDatabase(ProductRepository repository) {
+    public CommandLineRunner initDatabase(ProductoRepository repository) {
         // La expresión lambda dentro del `run` se ejecuta cuando la aplicación está lista.
         return args -> {
             log.info("Inicializando la base de datos con registros de ejemplo...");
