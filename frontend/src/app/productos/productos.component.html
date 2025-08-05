@@ -1,0 +1,15 @@
+<div>
+    <h1>Productos</h1>
+    <br>
+    <br>
+
+    <div *ngFor="let producto of productos">
+      <p>Nombre: {{ producto.nombre }}</p>
+      <p>Precio: {{ producto.precio }}</p>
+      <p>Stock: {{ producto.stock }}</p>
+      <p>Descripción: {{ producto.descripcion }}</p>
+      <br>
+    </div>
+
+  <button (click)="mostrarMensaje()">Volver al menu</button>
+</div>

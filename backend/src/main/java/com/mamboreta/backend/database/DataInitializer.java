@@ -50,6 +50,27 @@ public class DataInitializer {
             producto3.setPrecio(8.00);
             productos.add(producto3);
 
+            Producto producto4 = new Producto();
+            producto4.setNombre("Tangram");
+            producto4.setPrecio(1054.00);
+            productos.add(producto4);
+
+            Producto producto5 = new Producto();
+            producto5.setNombre("Enhebrado");
+            producto5.setPrecio(640.00);
+            productos.add(producto5);
+
+            Producto producto6 = new Producto();
+            producto6.setNombre("PescaMagic");
+            producto6.setPrecio(500.00);
+            productos.add(producto6);
+
+            Producto producto7 = new Producto();
+            producto7.setNombre("TaTeTi");
+            producto7.setPrecio(2500.00);
+            producto7.setStock(150);
+            productos.add(producto7);
+
             // Guardamos todos los productos en una sola llamada, que es más eficiente.
             repository.saveAll(productos);
 
