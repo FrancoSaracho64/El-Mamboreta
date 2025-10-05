@@ -1,5 +1,6 @@
 package com.mamboreta.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,18 +23,18 @@ public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @NotBlank(message = "El nombre del cliente es obligatorio")
     @Column(nullable = false)
     private String nombre;
-    
+
     @Column(length = 100)
     private String apellido;
-    
+
     @Email(message = "El formato del email no es válido")
     @Column(unique = true)
     private String email;
-    
+
     @Column(length = 200)
     private String direccion;
 
@@ -44,13 +46,17 @@ public class Cliente {
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RedSocial> redesSociales;
-    
+
     @Column(nullable = false)
     private Boolean activo = true;
-    
+
     @Column(nullable = false)
     private LocalDateTime fechaRegistro = LocalDateTime.now();
-    
+
     @Column(length = 500)
     private String observaciones;
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Pedido> pedidos = new ArrayList<>();
 }

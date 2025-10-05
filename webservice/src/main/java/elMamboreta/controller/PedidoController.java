@@ -1,9 +1,11 @@
 package elMamboreta.controller;
 
+import com.mamboreta.backend.dto.ClienteDTO;
 import com.mamboreta.backend.dto.PedidoDTO;
 import com.mamboreta.backend.dto.PedidoProductoDTO;
 import com.mamboreta.backend.entity.Cliente;
 import com.mamboreta.backend.entity.Pedido;
+import com.mamboreta.backend.entity.PedidoProducto;
 import com.mamboreta.backend.entity.Producto;
 import com.mamboreta.backend.service.ClienteService;
 import com.mamboreta.backend.service.PedidoService;
@@ -36,9 +38,34 @@ public class PedidoController {
      * Obtiene todos los pedidos
      */
     @GetMapping
-    public ResponseEntity<List<Pedido>> getAllPedidos() {
+    public ResponseEntity<List<PedidoDTO>> getAllPedidos() {
         List<Pedido> pedidos = pedidoService.findAll();
-        return ResponseEntity.ok(pedidos);
+
+        List<PedidoDTO> pedidosDTO = pedidos.stream().map(pedido -> {
+            PedidoDTO dto = new PedidoDTO();
+            dto.setClienteId(pedido.getCliente().getId());
+            dto.setEstado(pedido.getEstado());
+
+            List<PedidoProductoDTO> productosDTO = pedido.getProductos().stream()
+                    .map(pp -> new PedidoProductoDTO(pp.getProducto().getId(), pp.getCantidad()))
+                    .toList();
+            dto.setProductos(productosDTO);
+
+            Cliente cliente = pedido.getCliente();
+            if (cliente != null) {
+                dto.setCliente(new ClienteDTO(
+                        cliente.getId(),
+                        cliente.getNombre(),
+                        cliente.getApellido(),
+                        cliente.getEmail(),
+                        cliente.getDireccion()
+                ));
+            }
+
+            return dto;
+        }).toList();
+
+        return ResponseEntity.ok(pedidosDTO);
     }
 
     /**
@@ -102,37 +129,57 @@ public class PedidoController {
      * Crea un nuevo pedido
      */
     @PostMapping
-    public ResponseEntity<Pedido> createPedido(@RequestBody PedidoDTO pedidoDTO) {
+    public ResponseEntity<PedidoDTO> createPedido(@RequestBody PedidoDTO pedidoDTO) {
         try {
             // Buscar cliente
             Cliente cliente = clienteService.findById(pedidoDTO.getClienteId())
                     .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
 
-            // Crear lista de productos del pedido
-            List<Producto> productos = new ArrayList<>();
-            for (PedidoProductoDTO pp : pedidoDTO.getProductos()) {
-                Producto producto = productoService.findById(pp.getProductoId())
-                        .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + pp.getProductoId()));
-                // Aquí podrías crear una entidad intermedia PedidoProducto si quieres guardar la cantidad
-                // Por simplicidad, si tu relación ManyToMany no tiene cantidad, solo agregamos el producto
-                productos.add(producto);
-                // Si quieres manejar cantidad, tendrías que mapear a la tabla intermedia
-            }
-
+            // Crear pedido
             Pedido pedido = new Pedido();
             pedido.setCliente(cliente);
             pedido.setEstado(pedidoDTO.getEstado());
-            pedido.setProductos(productos);
 
+            List<PedidoProducto> pedidoProductos = new ArrayList<>();
+            for (PedidoProductoDTO ppDTO : pedidoDTO.getProductos()) {
+                Producto producto = productoService.findById(ppDTO.getProductoId())
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + ppDTO.getProductoId()));
+
+                PedidoProducto pedidoProducto = new PedidoProducto();
+                pedidoProducto.setPedido(pedido);
+                pedidoProducto.setProducto(producto);
+                pedidoProducto.setCantidad(ppDTO.getCantidad());
+
+                pedidoProductos.add(pedidoProducto);
+            }
+
+            pedido.setProductos(pedidoProductos);
             Pedido nuevoPedido = pedidoService.save(pedido);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPedido);
+
+            // Mapear a DTO para devolver al front
+            PedidoDTO responseDTO = new PedidoDTO();
+            responseDTO.setClienteId(nuevoPedido.getCliente().getId());
+            responseDTO.setEstado(nuevoPedido.getEstado());
+
+            List<PedidoProductoDTO> productosDTO = nuevoPedido.getProductos().stream()
+                    .map(pp -> new PedidoProductoDTO(pp.getProducto().getId(), pp.getCantidad()))
+                    .toList();
+            responseDTO.setProductos(productosDTO);
+
+            responseDTO.setCliente(new ClienteDTO(
+                    cliente.getId(),
+                    cliente.getNombre(),
+                    cliente.getApellido(),
+                    cliente.getEmail(),
+                    cliente.getDireccion()
+            ));
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
-
 
     /**
      * Actualiza un pedido existente

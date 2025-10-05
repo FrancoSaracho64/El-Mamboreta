@@ -12,9 +12,10 @@ interface Cliente {
 }
 
 interface Producto {
-  productoId: number;
-  cantidad: number;
-  // precio: number;
+  id: number;       // <-- Cambiado de productoId a id
+  nombre: string;
+  precio: number;
+  cantidad?: number;
 }
 
 interface Pedido {
@@ -25,12 +26,18 @@ interface Pedido {
   fechaSolicitado?: string;
 }
 
+interface PedidoDTO {
+  clienteId: number;
+  estado: string;
+  productos: { productoId: number; cantidad: number }[];
+}
+
 @Component({
   selector: 'app-pedidos',
   standalone: true,
   imports: [CommonModule, HttpClientModule, FormsModule],
   templateUrl: './pedidos.component.html',
-  styleUrl: './pedidos.component.css'
+  styleUrls: ['./pedidos.component.css']
 })
 export class PedidosComponent implements OnInit {
   pedidos: Pedido[] = [];
@@ -56,57 +63,55 @@ export class PedidosComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    // Cargar clientes
+    // Cargar clientes primero
     this.http.get<Cliente[]>(`${environment.apiUrl}/clientes`).subscribe({
-      next: (data) => {
-        this.clientes = data;
-      },
-      error: (error) => {
-        console.error('Error al cargar clientes:', error);
-      }
-    });
+      next: clientesData => {
+        this.clientes = clientesData;
 
-    // Cargar productos
-    this.http.get<Producto[]>(`${environment.apiUrl}/productos`).subscribe({
-      next: (data) => {
-        this.productos = data;
-      },
-      error: (error) => {
-        console.error('Error al cargar productos:', error);
-      }
-    });
+        // Ahora sí cargar productos
+        this.http.get<Producto[]>(`${environment.apiUrl}/productos`).subscribe({
+          next: productosData => this.productos = productosData,
+          error: error => console.error('Error al cargar productos:', error)
+        });
 
-    // Cargar pedidos
-    this.cargarPedidos();
+        // Y ahora cargar pedidos
+        this.cargarPedidos();
+      },
+      error: error => console.error('Error al cargar clientes:', error)
+    });
   }
+
 
   cargarPedidos(): void {
     this.http.get<Pedido[]>(`${environment.apiUrl}/pedidos`).subscribe({
-      next: (data) => {
+      next: data => {
         this.pedidos = data;
         this.pedidosFiltrados = [...this.pedidos];
       },
-      error: (error) => {
-        console.error('Error al cargar pedidos:', error);
-      }
+      error: error => console.error('Error al cargar pedidos:', error)
     });
   }
 
   mostrarFormulario(): void {
     this.mostrarForm = true;
     this.pedidoEditando = null;
-    this.pedido = {
-      clienteId: 0,
-      estado: '',
-      productos: []
-    };
+    this.pedido = {clienteId: 0, estado: '', productos: []};
     this.productosSeleccionados = [];
+    this.productos.forEach(p => p.cantidad = undefined);
   }
 
   editarPedido(pedido: Pedido): void {
     this.pedidoEditando = pedido;
     this.pedido = {...pedido};
-    this.productosSeleccionados = pedido.productos?.map(p => p.productoId) || [];
+    this.productosSeleccionados = pedido.productos?.map(p => p.id) || [];
+    this.productos.forEach(p => {
+      if (this.productosSeleccionados.includes(p.id)) {
+        const prod = pedido.productos?.find(pp => pp.id === p.id);
+        p.cantidad = prod?.cantidad;
+      } else {
+        p.cantidad = undefined;
+      }
+    });
     this.mostrarForm = true;
   }
 
@@ -115,89 +120,46 @@ export class PedidosComponent implements OnInit {
       this.productosSeleccionados.push(productoId);
     } else {
       this.productosSeleccionados = this.productosSeleccionados.filter(id => id !== productoId);
+      const producto = this.productos.find(p => p.id === productoId);
+      if (producto) producto.cantidad = undefined;
     }
   }
-
-  /*guardarPedido(): void {
-    // Agregar productos seleccionados al pedido
-    this.pedido.productos = this.productos.filter(p => this.productosSeleccionados.includes(p.productoId));
-
-    if (this.pedidoEditando) {
-      // Actualizar pedido existente
-      this.http.put<Pedido>(`${environment.apiUrl}/pedidos/${this.pedidoEditando.id}`, this.pedido)
-        .subscribe({
-          next: (pedidoActualizado) => {
-            const index = this.pedidos.findIndex(p => p.id === pedidoActualizado.id);
-            if (index !== -1) {
-              this.pedidos[index] = pedidoActualizado;
-              this.filtrarPedidos();
-            }
-            this.cancelarEdicion();
-          },
-          error: (error) => {
-            console.error('Error al actualizar pedido:', error);
-            // Simular actualización local para desarrollo
-            const index = this.pedidos.findIndex(p => p.id === this.pedidoEditando?.id);
-            if (index !== -1) {
-              this.pedidos[index] = {...this.pedido, id: this.pedidoEditando?.id};
-              this.filtrarPedidos();
-            }
-            this.cancelarEdicion();
-          }
-        });
-    } else {
-      // Crear nuevo pedido
-      debugger
-      this.http.post<Pedido>(`${environment.apiUrl}/pedidos`, this.pedido)
-        .subscribe({
-          next: (nuevoPedido) => {
-            this.pedidos.push(nuevoPedido);
-            this.filtrarPedidos();
-            this.cancelarEdicion();
-          },
-          error: (error) => {
-            console.error('Error al crear pedido:', error);
-            // Simular creación local para desarrollo
-            const nuevoId = Math.max(...this.pedidos.map(p => p.id || 0)) + 1;
-            const nuevoPedido = {...this.pedido, id: nuevoId};
-            this.pedidos.push(nuevoPedido);
-            this.filtrarPedidos();
-            this.cancelarEdicion();
-          }
-        });
-    }
-  }*/
 
   guardarPedido(): void {
-    // Mapear productos seleccionados con cantidad
-    this.pedido.productos = this.productosSeleccionados.map(productoId => {
-      const producto = this.productos.find(p => p.productoId === productoId);
-      return {
-        productoId: productoId,
-        cantidad: producto ? Number(producto.cantidad) : 1
-      };
-    });
+    const pedidoDTO: PedidoDTO = {
+      clienteId: this.pedido.clienteId,
+      estado: this.pedido.estado,
+      productos: this.productos
+        .filter(p => this.productosSeleccionados.includes(p.id) && p.cantidad && p.cantidad > 0)
+        .map(p => ({productoId: p.id, cantidad: p.cantidad!}))
+    };
 
     if (this.pedidoEditando) {
-      // lógica para actualizar pedido...
-    } else {
-      // Crear nuevo pedido
-      this.http.post<Pedido>(`${environment.apiUrl}/pedidos`, this.pedido)
+      this.http.put<Pedido>(`${environment.apiUrl}/pedidos/${this.pedidoEditando.id}`, pedidoDTO)
         .subscribe({
-          next: (nuevoPedido) => {
+          next: pedidoActualizado => {
+            const index = this.pedidos.findIndex(p => p.id === pedidoActualizado.id);
+            if (index !== -1) this.pedidos[index] = pedidoActualizado;
+            this.filtrarPedidos();
+            this.cancelarEdicion();
+          },
+          error: error => console.error('Error al actualizar pedido:', error)
+        });
+    } else {
+      this.http.post<Pedido>(`${environment.apiUrl}/pedidos`, pedidoDTO)
+        .subscribe({
+          next: nuevoPedido => {
             this.pedidos.push(nuevoPedido);
             this.filtrarPedidos();
             this.cancelarEdicion();
           },
-          error: (error) => {
-            console.error('Error al crear pedido:', error);
-          }
+          error: error => console.error('Error al crear pedido:', error)
         });
     }
   }
 
-
-  eliminarPedido(id: number): void {
+  eliminarPedido(id?: number): void {
+    if (!id) return;
     if (confirm('¿Está seguro de que desea eliminar este pedido?')) {
       this.http.delete(`${environment.apiUrl}/pedidos/${id}`)
         .subscribe({
@@ -205,12 +167,7 @@ export class PedidosComponent implements OnInit {
             this.pedidos = this.pedidos.filter(p => p.id !== id);
             this.filtrarPedidos();
           },
-          error: (error) => {
-            console.error('Error al eliminar pedido:', error);
-            // Simular eliminación local para desarrollo
-            this.pedidos = this.pedidos.filter(p => p.id !== id);
-            this.filtrarPedidos();
-          }
+          error: error => console.error('Error al eliminar pedido:', error)
         });
     }
   }
@@ -218,12 +175,9 @@ export class PedidosComponent implements OnInit {
   cancelarEdicion(): void {
     this.mostrarForm = false;
     this.pedidoEditando = null;
-    this.pedido = {
-      clienteId: 0,
-      estado: '',
-      productos: []
-    };
+    this.pedido = {clienteId: 0, estado: '', productos: []};
     this.productosSeleccionados = [];
+    this.productos.forEach(p => p.cantidad = undefined);
   }
 
   filtrarPedidos(): void {

@@ -1,6 +1,7 @@
 package com.mamboreta.backend.service;
 
 import com.mamboreta.backend.entity.Pedido;
+import com.mamboreta.backend.entity.PedidoProducto;
 import com.mamboreta.backend.entity.Producto;
 import com.mamboreta.backend.repository.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,30 +75,34 @@ public class PedidoService {
      * Guarda un nuevo pedido
      */
     public Pedido save(Pedido pedido) {
-        // Validar que el pedido tenga productos
-        if (pedido.getProductos() == null || pedido.getProductos().isEmpty()) {
-            throw new RuntimeException("El pedido debe tener al menos un producto");
-        }
-
-        // Validar que el cliente exista
+        // Validar cliente
         if (pedido.getCliente() == null || pedido.getCliente().getId() == null) {
             throw new RuntimeException("El pedido debe tener un cliente válido");
         }
 
-        // Validar stock de productos
-        for (Producto producto : pedido.getProductos()) {
-            Optional<Producto> productoExistente = productoService.findById(producto.getId());
-            if (productoExistente.isPresent()) {
-                Producto prod = productoExistente.get();
-                if (prod.getStock() <= 0) {
-                    throw new RuntimeException("El producto " + prod.getNombre() + " no tiene stock disponible");
-                }
-            } else {
-                throw new RuntimeException("El producto con ID " + producto.getId() + " no existe");
-            }
+        // Validar productos y stock
+        if (pedido.getProductos() == null || pedido.getProductos().isEmpty()) {
+            throw new RuntimeException("El pedido debe tener al menos un producto");
         }
 
-        // Establecer estado inicial si no se proporciona
+        for (PedidoProducto pp : pedido.getProductos()) {
+            if (pp.getProducto() == null || pp.getProducto().getId() == null) {
+                throw new RuntimeException("PedidoProducto debe tener un producto válido");
+            }
+
+            Producto productoExistente = productoService.findById(pp.getProducto().getId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + pp.getProducto().getId()));
+
+            if (productoExistente.getStock() < pp.getCantidad()) {
+                throw new RuntimeException("Stock insuficiente para el producto: " + productoExistente.getNombre());
+            }
+
+            // Vincular correctamente el PedidoProducto con el Pedido
+            pp.setPedido(pedido);
+            pp.setProducto(productoExistente);
+        }
+
+        // Estado inicial
         if (pedido.getEstado() == null || pedido.getEstado().isEmpty()) {
             pedido.setEstado("PENDIENTE");
         }
@@ -109,67 +114,80 @@ public class PedidoService {
      * Actualiza un pedido existente
      */
     public Pedido update(Long id, Pedido pedido) {
-        Optional<Pedido> pedidoExistente = pedidoRepository.findById(id);
-        if (pedidoExistente.isPresent()) {
-            // Validar que el pedido tenga productos
-            if (pedido.getProductos() == null || pedido.getProductos().isEmpty()) {
-                throw new RuntimeException("El pedido debe tener al menos un producto");
-            }
+        Pedido pedidoExistente = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + id));
 
-            // Validar que el cliente exista
-            if (pedido.getCliente() == null || pedido.getCliente().getId() == null) {
-                throw new RuntimeException("El pedido debe tener un cliente válido");
-            }
-
-            pedido.setId(id);
-            return pedidoRepository.save(pedido);
-        } else {
-            throw new RuntimeException("Pedido no encontrado con ID: " + id);
+        // Validar cliente
+        if (pedido.getCliente() == null || pedido.getCliente().getId() == null) {
+            throw new RuntimeException("El pedido debe tener un cliente válido");
         }
+
+        // Validar productos
+        if (pedido.getProductos() == null || pedido.getProductos().isEmpty()) {
+            throw new RuntimeException("El pedido debe tener al menos un producto");
+        }
+
+        for (PedidoProducto pp : pedido.getProductos()) {
+            if (pp.getProducto() == null || pp.getProducto().getId() == null) {
+                throw new RuntimeException("PedidoProducto debe tener un producto válido");
+            }
+            Producto productoExistente = productoService.findById(pp.getProducto().getId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + pp.getProducto().getId()));
+            pp.setPedido(pedido);
+            pp.setProducto(productoExistente);
+        }
+
+        pedido.setId(id);
+        return pedidoRepository.save(pedido);
     }
 
     /**
      * Actualiza el estado de un pedido
      */
     public Pedido updateEstado(Long id, String nuevoEstado) {
-        Optional<Pedido> pedido = pedidoRepository.findById(id);
-        if (pedido.isPresent()) {
-            Pedido pedidoActual = pedido.get();
-            
-            // Validar transiciones de estado válidas
-            String estadoActual = pedidoActual.getEstado();
-            if (!isTransicionEstadoValida(estadoActual, nuevoEstado)) {
-                throw new RuntimeException("Transición de estado no válida: " + estadoActual + " -> " + nuevoEstado);
-            }
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + id));
 
-            // Si el estado cambia a COMPLETADO, actualizar stock de productos
-            if ("COMPLETADO".equals(nuevoEstado) && !"COMPLETADO".equals(estadoActual)) {
-                for (Producto producto : pedidoActual.getProductos()) {
-                    productoService.decrementarStock(producto.getId(), 1);
-                }
-            }
-
-            pedidoActual.setEstado(nuevoEstado);
-            return pedidoRepository.save(pedidoActual);
-        } else {
-            throw new RuntimeException("Pedido no encontrado con ID: " + id);
+        String estadoActual = pedido.getEstado();
+        if (!isTransicionEstadoValida(estadoActual, nuevoEstado)) {
+            throw new RuntimeException("Transición de estado no válida: " + estadoActual + " -> " + nuevoEstado);
         }
+
+        // Si cambia a COMPLETADO, decrementar stock según cantidad
+        if ("COMPLETADO".equals(nuevoEstado) && !"COMPLETADO".equals(estadoActual)) {
+            for (PedidoProducto pp : pedido.getProductos()) {
+                productoService.decrementarStock(pp.getProducto().getId(), pp.getCantidad());
+            }
+        }
+
+        pedido.setEstado(nuevoEstado);
+        return pedidoRepository.save(pedido);
     }
 
     /**
      * Elimina un pedido
      */
     public void deleteById(Long id) {
-        Optional<Pedido> pedido = pedidoRepository.findById(id);
-        if (pedido.isPresent()) {
-            // Solo permitir eliminar pedidos en estado PENDIENTE
-            if (!"PENDIENTE".equals(pedido.get().getEstado())) {
-                throw new RuntimeException("Solo se pueden eliminar pedidos en estado PENDIENTE");
-            }
-            pedidoRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Pedido no encontrado con ID: " + id);
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + id));
+
+        if (!"PENDIENTE".equals(pedido.getEstado())) {
+            throw new RuntimeException("Solo se pueden eliminar pedidos en estado PENDIENTE");
         }
+
+        pedidoRepository.deleteById(id);
+    }
+
+    /**
+     * Calcula el total del pedido
+     */
+    public Double calcularTotalPedido(Long pedidoId) {
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + pedidoId));
+
+        return pedido.getProductos().stream()
+                .mapToDouble(pp -> pp.getProducto().getPrecio() * pp.getCantidad())
+                .sum();
     }
 
     /**
@@ -181,24 +199,8 @@ public class PedidoService {
                 return "EN_PROCESO".equals(nuevoEstado) || "CANCELADO".equals(nuevoEstado);
             case "EN_PROCESO":
                 return "COMPLETADO".equals(nuevoEstado) || "CANCELADO".equals(nuevoEstado);
-            case "COMPLETADO":
-            case "CANCELADO":
-                return false; // Estados finales, no se pueden cambiar
             default:
                 return false;
         }
     }
-
-    /**
-     * Calcula el total del pedido
-     */
-    public Double calcularTotalPedido(Long pedidoId) {
-        Optional<Pedido> pedido = pedidoRepository.findById(pedidoId);
-        if (pedido.isPresent()) {
-            return pedido.get().getProductos().stream()
-                    .mapToDouble(Producto::getPrecio)
-                    .sum();
-        }
-        return 0.0;
-    }
-} 
+}

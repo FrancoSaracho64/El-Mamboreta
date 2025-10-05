@@ -29,36 +29,21 @@
         </select>
       </div>
 
-      <!--<div class="form-group">
-        <label>Productos</label>
-        <div class="productos-seleccion">
-          <div *ngFor="let producto of productos" class="producto-item">
-            <input type="checkbox"
-                   [id]="'producto-' + producto.productoId"
-                   [value]="producto.id"
-                   (change)="toggleProducto(producto.id, $event)">
-            <label [for]="'producto-' + producto.id">
-              {{ producto.nombre }} - ${{ producto.precio | number:'1.2-2' }}
-            </label>
-          </div>
-        </div>
-      </div>
--->
-
       <div class="form-group">
         <label>Productos</label>
         <div class="productos-seleccion">
           <div *ngFor="let producto of productos" class="producto-item">
             <input type="checkbox"
-                   [id]="'producto-' + producto.productoId"
-                   (change)="toggleProducto(producto.productoId, $event)">
-            <label [for]="'producto-' + producto.productoId">
+                   [id]="'producto-' + producto.id"
+                   (change)="toggleProducto(producto.id, $event)">
+            <label [for]="'producto-' + producto.id">
               {{ producto.nombre }} - ${{ producto.precio | number:'1.2-2' }}
             </label>
             <input type="number"
                    min="1"
                    [(ngModel)]="producto.cantidad"
-                   [disabled]="!productosSeleccionados.includes(producto.productoId)"
+                   [disabled]="!productosSeleccionados.includes(producto.id)"
+                   name="cantidad-{{producto.id}}"
                    placeholder="Cantidad">
           </div>
         </div>
@@ -81,31 +66,31 @@
 
     <table class="data-table">
       <thead>
-        <tr>
-          <th>ID</th>
-          <th>Cliente</th>
-          <th>Estado</th>
-          <th>Productos</th>
-          <th>Fecha</th>
-          <th>Acciones</th>
-        </tr>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Estado</th>
+        <th>Productos</th>
+        <th>Fecha</th>
+        <th>Acciones</th>
+      </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let pedido of pedidosFiltrados">
-          <td>{{ pedido.id }}</td>
-          <td>{{ obtenerNombreCliente(pedido.clienteId) }}</td>
-          <td>
+      <tr *ngFor="let pedido of pedidosFiltrados">
+        <td>{{ pedido.id }}</td>
+        <td>{{ obtenerNombreCliente(pedido.clienteId) }}</td>
+        <td>
             <span class="estado" [class]="'estado-' + pedido.estado.toLowerCase()">
               {{ pedido.estado }}
             </span>
-          </td>
-          <td>{{ pedido.productos?.length || 0 }} productos</td>
-          <td>{{ pedido.fechaSolicitado | date:'dd/MM/yyyy HH:mm' }}</td>
-          <td class="actions">
-            <button class="btn-edit" (click)="editarPedido(pedido)">✏️</button>
-            <button class="btn-delete" (click)="eliminarPedido(pedido.id!)">🗑️</button>
-          </td>
-        </tr>
+        </td>
+        <td>{{ pedido.productos?.length || 0 }} productos</td>
+        <td>{{ pedido.fechaSolicitado | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td class="actions">
+          <button class="btn-edit" (click)="editarPedido(pedido)">✏️</button>
+          <button class="btn-delete" (click)="eliminarPedido(pedido.id)">🗑️</button>
+        </td>
+      </tr>
       </tbody>
     </table>
 

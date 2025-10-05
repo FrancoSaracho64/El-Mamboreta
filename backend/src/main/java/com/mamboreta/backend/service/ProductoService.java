@@ -51,11 +51,25 @@ public class ProductoService {
         return productoRepository.findByPrecioBetween(precioMin, precioMax);
     }
 
+
     /**
      * Busca productos con stock bajo
      */
     public List<Producto> findByStockLessThan(Integer stockMinimo) {
         return productoRepository.findByStockLessThan(stockMinimo);
+    }
+
+    /**
+     * Decrementa el stock de un producto
+     */
+    public void decrementarStock(Long productoId, int cantidad) {
+        Optional<Producto> productoOpt = productoRepository.findById(productoId);
+        if (productoOpt.isPresent()) {
+            Producto producto = productoOpt.get();
+            int nuevoStock = producto.getStock() - cantidad;
+            producto.setStock(nuevoStock);
+            productoRepository.save(producto);
+        }
     }
 
     /**
@@ -79,7 +93,7 @@ public class ProductoService {
         if (producto.getPrecio() <= 0) {
             throw new RuntimeException("El precio del producto debe ser mayor a 0");
         }
-        
+
         if (producto.getStock() < 0) {
             throw new RuntimeException("El stock del producto no puede ser negativo");
         }
@@ -96,7 +110,7 @@ public class ProductoService {
             if (producto.getPrecio() <= 0) {
                 throw new RuntimeException("El precio del producto debe ser mayor a 0");
             }
-            
+
             if (producto.getStock() < 0) {
                 throw new RuntimeException("El stock del producto no puede ser negativo");
             }

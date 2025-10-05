@@ -1,5 +1,6 @@
 package com.mamboreta.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,22 +30,16 @@ public class Pedido {
     /**
      * Relación ManyToMany con la entidad Producto.
      * Un pedido puede tener muchos productos y un producto puede estar en muchos pedidos.
-     * Se usa @JoinTable para crear una tabla intermedia que gestiona la relación.
      */
-    @ManyToMany
-    @JoinTable(
-            name = "pedido_productos",
-            joinColumns = @JoinColumn(name = "pedido_id"),
-            inverseJoinColumns = @JoinColumn(name = "producto_id")
-    )
-    private List<Producto> productos;
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PedidoProducto> productos = new ArrayList<>();
 
     /**
      * Relación ManyToOne con la entidad Cliente.
      * Muchos pedidos pueden pertenecer a un solo cliente.
      * Se usa @JoinColumn para especificar la clave foránea.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
     private String estado;
