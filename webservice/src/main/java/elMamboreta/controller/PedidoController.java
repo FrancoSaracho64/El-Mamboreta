@@ -1,14 +1,20 @@
 package elMamboreta.controller;
 
+import com.mamboreta.backend.dto.PedidoDTO;
+import com.mamboreta.backend.dto.PedidoProductoDTO;
+import com.mamboreta.backend.entity.Cliente;
 import com.mamboreta.backend.entity.Pedido;
+import com.mamboreta.backend.entity.Producto;
+import com.mamboreta.backend.service.ClienteService;
 import com.mamboreta.backend.service.PedidoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.mamboreta.backend.service.ProductoService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,9 +22,15 @@ import java.util.Optional;
 @RequestMapping("/api/pedidos")
 @CrossOrigin(origins = "*")
 public class PedidoController {
+    private final PedidoService pedidoService;
+    private final ClienteService clienteService;
+    private final ProductoService productoService;
 
-    @Autowired
-    private PedidoService pedidoService;
+    public PedidoController(PedidoService pedidoService, ClienteService clienteService, ProductoService productoService) {
+        this.pedidoService = pedidoService;
+        this.clienteService = clienteService;
+        this.productoService = productoService;
+    }
 
     /**
      * Obtiene todos los pedidos
@@ -90,14 +102,37 @@ public class PedidoController {
      * Crea un nuevo pedido
      */
     @PostMapping
-    public ResponseEntity<Pedido> createPedido(@RequestBody Pedido pedido) {
+    public ResponseEntity<Pedido> createPedido(@RequestBody PedidoDTO pedidoDTO) {
         try {
+            // Buscar cliente
+            Cliente cliente = clienteService.findById(pedidoDTO.getClienteId())
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+            // Crear lista de productos del pedido
+            List<Producto> productos = new ArrayList<>();
+            for (PedidoProductoDTO pp : pedidoDTO.getProductos()) {
+                Producto producto = productoService.findById(pp.getProductoId())
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + pp.getProductoId()));
+                // Aquí podrías crear una entidad intermedia PedidoProducto si quieres guardar la cantidad
+                // Por simplicidad, si tu relación ManyToMany no tiene cantidad, solo agregamos el producto
+                productos.add(producto);
+                // Si quieres manejar cantidad, tendrías que mapear a la tabla intermedia
+            }
+
+            Pedido pedido = new Pedido();
+            pedido.setCliente(cliente);
+            pedido.setEstado(pedidoDTO.getEstado());
+            pedido.setProductos(productos);
+
             Pedido nuevoPedido = pedidoService.save(pedido);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPedido);
+
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(null);
         }
     }
+
+
 
     /**
      * Actualiza un pedido existente

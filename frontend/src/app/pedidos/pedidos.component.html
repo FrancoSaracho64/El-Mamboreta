@@ -1,0 +1,120 @@
+<div class="container">
+  <div class="header">
+    <h1>📋 Gestión de Pedidos</h1>
+    <button class="btn-primary" (click)="mostrarFormulario()">+ Nuevo Pedido</button>
+  </div>
+
+  <!-- Formulario de Pedido -->
+  <div class="form-container" *ngIf="mostrarForm">
+    <h3>{{ pedidoEditando ? 'Editar Pedido' : 'Nuevo Pedido' }}</h3>
+    <form (ngSubmit)="guardarPedido()" #pedidoForm="ngForm">
+      <div class="form-group">
+        <label>Cliente *</label>
+        <select [(ngModel)]="pedido.clienteId" name="clienteId" required>
+          <option value="">Seleccionar cliente</option>
+          <option *ngFor="let cliente of clientes" [value]="cliente.id">
+            {{ cliente.nombre }} {{ cliente.apellido }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Estado *</label>
+        <select [(ngModel)]="pedido.estado" name="estado" required>
+          <option value="">Seleccionar estado</option>
+          <option value="PENDIENTE">Pendiente</option>
+          <option value="EN_PROCESO">En Proceso</option>
+          <option value="COMPLETADO">Completado</option>
+          <option value="CANCELADO">Cancelado</option>
+        </select>
+      </div>
+
+      <!--<div class="form-group">
+        <label>Productos</label>
+        <div class="productos-seleccion">
+          <div *ngFor="let producto of productos" class="producto-item">
+            <input type="checkbox"
+                   [id]="'producto-' + producto.productoId"
+                   [value]="producto.id"
+                   (change)="toggleProducto(producto.id, $event)">
+            <label [for]="'producto-' + producto.id">
+              {{ producto.nombre }} - ${{ producto.precio | number:'1.2-2' }}
+            </label>
+          </div>
+        </div>
+      </div>
+-->
+
+      <div class="form-group">
+        <label>Productos</label>
+        <div class="productos-seleccion">
+          <div *ngFor="let producto of productos" class="producto-item">
+            <input type="checkbox"
+                   [id]="'producto-' + producto.productoId"
+                   (change)="toggleProducto(producto.productoId, $event)">
+            <label [for]="'producto-' + producto.productoId">
+              {{ producto.nombre }} - ${{ producto.precio | number:'1.2-2' }}
+            </label>
+            <input type="number"
+                   min="1"
+                   [(ngModel)]="producto.cantidad"
+                   [disabled]="!productosSeleccionados.includes(producto.productoId)"
+                   placeholder="Cantidad">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-success" [disabled]="!pedidoForm.valid">
+          {{ pedidoEditando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de Pedidos -->
+  <div class="table-container">
+    <div class="search-bar">
+      <input type="text" placeholder="Buscar pedidos..." [(ngModel)]="terminoBusqueda" (input)="filtrarPedidos()">
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Estado</th>
+          <th>Productos</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pedido of pedidosFiltrados">
+          <td>{{ pedido.id }}</td>
+          <td>{{ obtenerNombreCliente(pedido.clienteId) }}</td>
+          <td>
+            <span class="estado" [class]="'estado-' + pedido.estado.toLowerCase()">
+              {{ pedido.estado }}
+            </span>
+          </td>
+          <td>{{ pedido.productos?.length || 0 }} productos</td>
+          <td>{{ pedido.fechaSolicitado | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td class="actions">
+            <button class="btn-edit" (click)="editarPedido(pedido)">✏️</button>
+            <button class="btn-delete" (click)="eliminarPedido(pedido.id!)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="pedidosFiltrados.length === 0" class="no-data">
+      No se encontraron pedidos
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <button class="btn-back" (click)="volverAlMenu()">← Volver al Menú</button>
+  </div>
+</div>

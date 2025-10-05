@@ -1,15 +1,90 @@
-<div>
-    <h1>Productos</h1>
-    <br>
-    <br>
+<div class="container">
+  <div class="header">
+    <h1>📦 Gestión de Productos</h1>
+    <button class="btn-primary" (click)="mostrarFormulario()">+ Nuevo Producto</button>
+  </div>
 
-    <div *ngFor="let producto of productos">
-      <p>Nombre: {{ producto.nombre }}</p>
-      <p>Precio: {{ producto.precio }}</p>
-      <p>Stock: {{ producto.stock }}</p>
-      <p>Descripción: {{ producto.descripcion }}</p>
-      <br>
+  <!-- Formulario de Producto -->
+  <div class="form-container" *ngIf="mostrarForm">
+    <h3>{{ productoEditando ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+    <form (ngSubmit)="guardarProducto()" #productoForm="ngForm">
+      <div class="form-group">
+        <label>Nombre *</label>
+        <input type="text" [(ngModel)]="producto.nombre" name="nombre" required>
+      </div>
+
+      <div class="form-group">
+        <label>Precio *</label>
+        <input type="number" step="0.01" [(ngModel)]="producto.precio" name="precio" required>
+      </div>
+
+      <div class="form-group">
+        <label>Stock</label>
+        <input type="number" [(ngModel)]="producto.stock" name="stock">
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea [(ngModel)]="producto.descripcion" name="descripcion" rows="3"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-success" [disabled]="!productoForm.valid">
+          {{ productoEditando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de Productos -->
+  <div class="table-container">
+    <div class="search-bar">
+      <input type="text" placeholder="Buscar productos..." [(ngModel)]="terminoBusqueda" (input)="filtrarProductos()">
     </div>
 
-  <button (click)="mostrarMensaje()">Volver al menu</button>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let producto of productosFiltrados">
+          <td>{{ producto.id }}</td>
+          <td>{{ producto.nombre }}</td>
+          <td>${{ producto.precio | number:'1.2-2' }}</td>
+          <td>
+            <span class="stock" [class.bajo]="producto.stock < 10" [class.medio]="producto.stock >= 10 && producto.stock < 50">
+              {{ producto.stock }}
+            </span>
+          </td>
+          <td>{{ producto.descripcion }}</td>
+          <td>
+            <span class="status" [class.activo]="producto.activo" [class.inactivo]="!producto.activo">
+              {{ producto.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="actions">
+            <button class="btn-edit" (click)="editarProducto(producto)">✏️</button>
+            <button class="btn-delete" (click)="eliminarProducto(producto.id!)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="productosFiltrados.length === 0" class="no-data">
+      No se encontraron productos
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <button class="btn-back" (click)="volverAlMenu()">← Volver al Menú</button>
+  </div>
 </div>

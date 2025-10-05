@@ -58,6 +58,7 @@
 }
 
 .form-group input,
+.form-group select,
 .form-group textarea {
   width: 100%;
   padding: 12px;
@@ -68,10 +69,37 @@
 }
 
 .form-group input:focus,
+.form-group select:focus,
 .form-group textarea:focus {
   outline: none;
   border-color: #007bff;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.productos-seleccion {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  background: white;
+}
+
+.producto-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.producto-item input[type="checkbox"] {
+  width: auto;
+  margin-right: 10px;
+}
+
+.producto-item label {
+  margin: 0;
+  font-weight: normal;
+  cursor: pointer;
 }
 
 .form-actions {
@@ -156,35 +184,29 @@
   background: #f8f9fa;
 }
 
-.stock {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.stock.bajo {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-.stock.medio {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.status {
+.estado {
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
 }
 
-.status.activo {
+.estado-pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.estado-en_proceso {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.estado-completado {
   background: #d4edda;
   color: #155724;
 }
 
-.status.inactivo {
+.estado-cancelado {
   background: #f8d7da;
   color: #721c24;
 }

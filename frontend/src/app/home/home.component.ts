@@ -6,13 +6,12 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-  constructor(private router:Router){}
+  constructor(private router: Router) {}
 
-
-  redireccionProductos(){
-    this.router.navigate(["/productos"]);
+  navegarA(destino: string) {
+    this.router.navigate([`/${destino}`]);
   }
 }

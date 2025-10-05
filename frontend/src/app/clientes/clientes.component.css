@@ -156,22 +156,6 @@
   background: #f8f9fa;
 }
 
-.stock {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.stock.bajo {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-.stock.medio {
-  background: #fff3cd;
-  color: #856404;
-}
-
 .status {
   padding: 4px 8px;
   border-radius: 4px;

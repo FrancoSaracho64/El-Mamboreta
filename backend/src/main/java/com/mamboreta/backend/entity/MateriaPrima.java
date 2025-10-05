@@ -27,11 +27,6 @@ public class MateriaPrima {
     @Column(length = 500)
     private String descripcion;
     
-    @NotNull(message = "El precio es obligatorio")
-    @Positive(message = "El precio debe ser mayor a 0")
-    @Column(nullable = false)
-    private Double precio;
-    
     @Column(nullable = false)
     private Integer stock = 0;
     

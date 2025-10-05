@@ -45,13 +45,6 @@ public class MateriaPrimaService {
     }
 
     /**
-     * Busca materias primas por rango de precio
-     */
-    public List<MateriaPrima> findByPrecioBetween(Double precioMin, Double precioMax) {
-        return materiaPrimaRepository.findByPrecioBetween(precioMin, precioMax);
-    }
-
-    /**
      * Busca materias primas con stock bajo
      */
     public List<MateriaPrima> findByStockLessThan(Integer stockMinimo) {
@@ -76,10 +69,6 @@ public class MateriaPrimaService {
      * Guarda una nueva materia prima
      */
     public MateriaPrima save(MateriaPrima materiaPrima) {
-        if (materiaPrima.getPrecio() <= 0) {
-            throw new RuntimeException("El precio de la materia prima debe ser mayor a 0");
-        }
-        
         if (materiaPrima.getStock() < 0) {
             throw new RuntimeException("El stock de la materia prima no puede ser negativo");
         }
@@ -93,10 +82,6 @@ public class MateriaPrimaService {
     public MateriaPrima update(Long id, MateriaPrima materiaPrima) {
         Optional<MateriaPrima> materiaPrimaExistente = materiaPrimaRepository.findById(id);
         if (materiaPrimaExistente.isPresent()) {
-            if (materiaPrima.getPrecio() <= 0) {
-                throw new RuntimeException("El precio de la materia prima debe ser mayor a 0");
-            }
-            
             if (materiaPrima.getStock() < 0) {
                 throw new RuntimeException("El stock de la materia prima no puede ser negativo");
             }

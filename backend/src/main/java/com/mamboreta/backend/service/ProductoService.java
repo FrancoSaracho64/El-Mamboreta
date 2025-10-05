@@ -175,4 +175,8 @@ public class ProductoService {
             throw new RuntimeException("Producto no encontrado con ID: " + id);
         }
     }
-} 
+
+    public List<Producto> findAllById(List<Long> productoIds) {
+        return productoRepository.findAllById(productoIds);
+    }
+}

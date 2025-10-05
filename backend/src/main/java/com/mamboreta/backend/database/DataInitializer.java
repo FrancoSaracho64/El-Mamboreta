@@ -1,6 +1,8 @@
 package com.mamboreta.backend.database;
 
+import com.mamboreta.backend.entity.Cliente;
 import com.mamboreta.backend.entity.Producto;
+import com.mamboreta.backend.repository.ClienteRepository;
 import com.mamboreta.backend.repository.ProductoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +25,11 @@ public class DataInitializer {
     /**
      * Define un Bean de tipo CommandLineRunner que se ejecutará al inicio de la aplicación.
      *
-     * @param repository El repositorio de la entidad Product, inyectado automáticamente por Spring.
+     * @param productoRepository El repositorio de la entidad Product, inyectado automáticamente por Spring.
      * @return Una instancia de CommandLineRunner.
      */
     @Bean
-    public CommandLineRunner initDatabase(ProductoRepository repository) {
+    public CommandLineRunner initDatabase(ProductoRepository productoRepository, ClienteRepository clienteRepository) {
         // La expresión lambda dentro del `run` se ejecuta cuando la aplicación está lista.
         return args -> {
             log.info("Inicializando la base de datos con registros de ejemplo...");
@@ -72,10 +74,16 @@ public class DataInitializer {
             productos.add(producto7);
 
             // Guardamos todos los productos en una sola llamada, que es más eficiente.
-            repository.saveAll(productos);
+            productoRepository.saveAll(productos);
 
-            log.info("Datos insertados. Listando todos los productos:");
-            repository.findAll().forEach(product -> log.info(product.toString()));
+            Cliente cliente = new Cliente();
+            cliente.setNombre("Franco");
+            cliente.setApellido("Saracho");
+            cliente.setEmail("fmsaracho64@gmail.com");
+            cliente.setDireccion("Salta 2060");
+            cliente.setObservaciones("Desarrollador de esta app B)");
+
+            clienteRepository.save(cliente);
         };
     }
 }

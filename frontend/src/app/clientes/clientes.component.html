@@ -1,0 +1,91 @@
+<div class="container">
+  <div class="header">
+    <h1>👥 Gestión de Clientes</h1>
+    <button class="btn-primary" (click)="mostrarFormulario()">+ Nuevo Cliente</button>
+  </div>
+
+  <!-- Formulario de Cliente -->
+  <div class="form-container" *ngIf="mostrarForm">
+    <h3>{{ clienteEditando ? 'Editar Cliente' : 'Nuevo Cliente' }}</h3>
+    <form (ngSubmit)="guardarCliente()" #clienteForm="ngForm">
+      <div class="form-group">
+        <label>Nombre *</label>
+        <input type="text" [(ngModel)]="cliente.nombre" name="nombre" required>
+      </div>
+
+      <div class="form-group">
+        <label>Apellido</label>
+        <input type="text" [(ngModel)]="cliente.apellido" name="apellido">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="cliente.email" name="email">
+      </div>
+
+      <div class="form-group">
+        <label>Dirección</label>
+        <textarea [(ngModel)]="cliente.direccion" name="direccion" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Observaciones</label>
+        <textarea [(ngModel)]="cliente.observaciones" name="observaciones" rows="3"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-success" [disabled]="!clienteForm.valid">
+          {{ clienteEditando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de Clientes -->
+  <div class="table-container">
+    <div class="search-bar">
+      <input type="text" placeholder="Buscar clientes..." [(ngModel)]="terminoBusqueda" (input)="filtrarClientes()">
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Email</th>
+          <th>Dirección</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cliente of clientesFiltrados">
+          <td>{{ cliente.id }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.apellido }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>{{ cliente.direccion }}</td>
+          <td>
+            <span class="status" [class.activo]="cliente.activo" [class.inactivo]="!cliente.activo">
+              {{ cliente.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="actions">
+            <button class="btn-edit" (click)="editarCliente(cliente)">✏️</button>
+            <button class="btn-delete" (click)="eliminarCliente(cliente.id!)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="clientesFiltrados.length === 0" class="no-data">
+      No se encontraron clientes
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <button class="btn-back" (click)="volverAlMenu()">← Volver al Menú</button>
+  </div>
+</div>

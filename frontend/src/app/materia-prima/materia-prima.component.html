@@ -1,0 +1,153 @@
+<div class="container">
+  <div class="header">
+    <h1>🔧 Gestión de Materia Prima</h1>
+    <button class="btn-primary" type="button" (click)="mostrarFormulario()">
+      + Nueva Materia Prima
+    </button>
+  </div>
+
+  <!-- Formulario de Materia Prima -->
+  <div class="form-container" *ngIf="mostrarForm">
+    <h3>{{ materiaPrimaEditando ? 'Editar Materia Prima' : 'Nueva Materia Prima' }}</h3>
+
+    <form (ngSubmit)="guardarMateriaPrima()" #materiaPrimaForm="ngForm">
+      <div class="form-group">
+        <label>Nombre *</label>
+        <input
+          type="text"
+          [(ngModel)]="materiaPrimaActual.nombre"
+          name="nombre"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea
+          [(ngModel)]="materiaPrimaActual.descripcion"
+          name="descripcion"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Stock</label>
+        <input
+          type="number"
+          [(ngModel)]="materiaPrimaActual.stock"
+          name="stock"
+          min="0"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Unidad de Medida</label>
+        <select
+          [(ngModel)]="materiaPrimaActual.unidadMedida"
+          name="unidadMedida"
+        >
+          <option value="">Seleccionar unidad</option>
+          <option value="KG">Kilogramos</option>
+          <option value="L">Litros</option>
+          <option value="M">Metros</option>
+          <option value="UNIDAD">Unidades</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn-success"
+          [disabled]="!materiaPrimaForm.valid"
+        >
+          {{ materiaPrimaEditando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de Materia Prima -->
+  <div class="table-container">
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="Buscar materia prima..."
+        [(ngModel)]="terminoBusqueda"
+        (input)="filtrarMateriaPrima()"
+      />
+    </div>
+
+    <table class="data-table" *ngIf="materiaPrimaFiltrada.length > 0">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Stock</th>
+        <th>Unidad</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let materia of materiaPrimaFiltrada">
+        <td>{{ materia.id }}</td>
+        <td>{{ materia.nombre }}</td>
+        <td>{{ materia.descripcion }}</td>
+        <td>
+            <span
+              class="stock"
+              [class.bajo]="materia.stock < 10"
+              [class.medio]="materia.stock >= 10 && materia.stock < 50"
+            >
+              {{ materia.stock }}
+            </span>
+        </td>
+        <td>{{ materia.unidadMedida }}</td>
+        <td>
+            <span
+              class="status"
+              [class.activo]="materia.activo"
+              [class.inactivo]="!materia.activo"
+            >
+              {{ materia.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td class="actions">
+          <button
+            class="btn-edit"
+            type="button"
+            (click)="editarMateriaPrima(materia)"
+          >
+            ✏️
+          </button>
+          <button
+            class="btn-delete"
+            type="button"
+            (click)="eliminarMateriaPrima(materia.id)"
+          >
+            🗑️
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="materiaPrimaFiltrada.length === 0" class="no-data">
+      No se encontró materia prima
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <button class="btn-back" type="button" (click)="volverAlMenu()">
+      ← Volver al Menú
+    </button>
+  </div>
+</div>

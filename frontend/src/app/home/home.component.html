@@ -1,3 +1,35 @@
-<h1>Menu principal</h1>
+<div class="menu-container">
+  <h1>El Mamboreta - Sistema de Gestión</h1>
 
-<button (click)="redireccionProductos()">Gestionar productos</button>
+  <div class="menu-grid">
+    <div class="menu-card" (click)="navegarA('clientes')">
+      <h3>👥 Clientes</h3>
+      <p>Gestionar información de clientes</p>
+    </div>
+
+    <div class="menu-card" (click)="navegarA('productos')">
+      <h3>📦 Productos</h3>
+      <p>Administrar catálogo de productos</p>
+    </div>
+
+    <div class="menu-card" (click)="navegarA('pedidos')">
+      <h3>📋 Pedidos</h3>
+      <p>Gestionar pedidos de clientes</p>
+    </div>
+
+    <div class="menu-card" (click)="navegarA('materia-prima')">
+      <h3>🔧 Materia Prima</h3>
+      <p>Controlar inventario de materiales</p>
+    </div>
+
+    <div class="menu-card" (click)="navegarA('ventas')">
+      <h3>💰 Ventas</h3>
+      <p>Administrar ventas realizadas</p>
+    </div>
+
+    <!--<div class="menu-card" (click)="navegarA('reportes')">
+      <h3>📊 Reportes</h3>
+      <p>Ver estadísticas y reportes</p>
+    </div>-->
+  </div>
+</div>

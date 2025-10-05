@@ -56,17 +56,6 @@ public class MateriaPrimaController {
     }
 
     /**
-     * Busca materias primas por rango de precio
-     */
-    @GetMapping("/precio")
-    public ResponseEntity<List<MateriaPrima>> getMateriasPrimasByPrecioRange(
-            @RequestParam Double precioMin, 
-            @RequestParam Double precioMax) {
-        List<MateriaPrima> materiasPrimas = materiaPrimaService.findByPrecioBetween(precioMin, precioMax);
-        return ResponseEntity.ok(materiasPrimas);
-    }
-
-    /**
      * Busca materias primas con stock bajo
      */
     @GetMapping("/stock-bajo")
