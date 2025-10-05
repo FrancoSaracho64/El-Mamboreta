@@ -1,4 +1,4 @@
-package elMamboreta.controller;
+package mamboreta.controller;
 
 import com.mamboreta.backend.entity.Telefono;
 import com.mamboreta.backend.service.TelefonoService;

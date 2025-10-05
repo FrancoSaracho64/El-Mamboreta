@@ -1,4 +1,4 @@
-package elMamboreta.security;
+package mamboreta.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

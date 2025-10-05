@@ -1,4 +1,4 @@
-package elMamboreta.security;
+package mamboreta.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

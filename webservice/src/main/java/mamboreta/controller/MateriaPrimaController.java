@@ -1,4 +1,4 @@
-package elMamboreta.controller;
+package mamboreta.controller;
 
 import com.mamboreta.backend.entity.MateriaPrima;
 import com.mamboreta.backend.service.MateriaPrimaService;

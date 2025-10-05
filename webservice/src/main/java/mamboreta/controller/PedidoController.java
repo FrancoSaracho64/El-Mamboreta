@@ -1,4 +1,4 @@
-package elMamboreta.controller;
+package mamboreta.controller;
 
 import com.mamboreta.backend.dto.ClienteDTO;
 import com.mamboreta.backend.dto.PedidoDTO;
