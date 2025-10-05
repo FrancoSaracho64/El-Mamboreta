@@ -8,6 +8,7 @@ import {VentasComponent} from './ventas/ventas.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './auth.guard';
 import { RoleGuard } from './role.guard';
+import { StockComponent } from './stock/stock.component';
 
 export const routes: Routes = [
   {path: 'home', component: HomeComponent},
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'admin', canActivate: [AuthGuard, RoleGuard], data: { role: 'ADMIN' }, loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent) },
   { path: 'empleado', canActivate: [AuthGuard, RoleGuard], data: { role: 'EMPLEADO' }, loadComponent: () => import('./empleado/empleado.component').then(m => m.EmpleadoComponent) },
+  { path: 'stock', canActivate: [AuthGuard, RoleGuard], data: { role: 'EMPLEADO' }, loadComponent: () => import('./stock/stock.component').then(m => m.StockComponent) },
   {path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];

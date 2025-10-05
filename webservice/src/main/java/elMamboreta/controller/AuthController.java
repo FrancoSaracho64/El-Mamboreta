@@ -1,64 +1,85 @@
 package elMamboreta.controller;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.mamboreta.backend.dto.UsuarioAuthDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Set;
-
-import com.mamboreta.backend.dto.UsuarioAuthDTO;
-import com.mamboreta.backend.entity.Usuario;
+import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private elMamboreta.security.JwtUtil jwtUtil;
+
+    /**
+     * Login de usuario (autenticación manual)
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
         String username = loginData.get("username");
         String password = loginData.get("password");
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        // Obtener usuario y roles
-        Object principal = authentication.getPrincipal();
-        String user;
-        Set<String> roles;
-        if (principal instanceof org.springframework.security.core.userdetails.User userDetails) {
-            user = userDetails.getUsername();
-            roles = userDetails.getAuthorities().stream()
-                    .map(a -> a.getAuthority().replace("ROLE_", ""))
-                    .collect(java.util.stream.Collectors.toSet());
-        } else {
-            user = username;
-            roles = java.util.Collections.emptySet();
-        }
-        UsuarioAuthDTO dto = new UsuarioAuthDTO(user, roles);
-        return ResponseEntity.ok(dto);
+
+        var userDetails = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        Set<String> roles = userDetails.getAuthorities().stream()
+                .map(a -> a.getAuthority().replace("ROLE_", ""))
+                .collect(Collectors.toSet());
+
+        // Generar JWT
+        String token = jwtUtil.generateToken(userDetails.getUsername());
+
+        // Devolver token y roles
+        return ResponseEntity.ok(Map.of(
+                "token", token,
+                "username", userDetails.getUsername(),
+                "roles", roles
+        ));
     }
 
+    /**
+     * Obtiene el usuario autenticado actual
+     */
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok().body(authentication.getPrincipal());
+
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(401).body(Map.of("error", "Usuario no autenticado"));
+        }
+
+        var userDetails = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        Set<String> roles = userDetails.getAuthorities().stream()
+                .map(a -> a.getAuthority().replace("ROLE_", ""))
+                .collect(Collectors.toSet());
+
+        return ResponseEntity.ok(new UsuarioAuthDTO(userDetails.getUsername(), roles));
     }
 
+    /**
+     * Logout (limpia el contexto de seguridad)
+     */
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
         SecurityContextHolder.clearContext();
-        return ResponseEntity.ok().body("Logout exitoso");
+        return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
     }
 }

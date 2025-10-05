@@ -21,7 +21,16 @@ export class LoginComponent {
 
   login() {
     this.authService.login(this.username, this.password).subscribe({
-      next: () => {
+      next: (user: any) => {
+        // Esperar a que el estado se actualice antes de redirigir
+        setTimeout(() => {
+          const role = this.authService.getRole();
+          if (role === 'ADMIN') {
+            // Redirige automáticamente desde el servicio
+          } else if (role === 'EMPLEADO') {
+            // Redirige automáticamente desde el servicio
+          }
+        }, 100);
       },
       error: () => {
         this.error = 'Credenciales incorrectas';

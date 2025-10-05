@@ -7,3 +7,30 @@
   background: #fffde7;
   text-align: center;
 }
+
+.card-stock {
+  margin: 32px auto;
+  max-width: 350px;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.15);
+  background: #e3f2fd;
+  text-align: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+.card-stock:hover {
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.25);
+}
+
+.card-stock button {
+  margin-top: 16px;
+  padding: 10px 24px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
