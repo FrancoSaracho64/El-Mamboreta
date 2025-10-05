@@ -5,6 +5,9 @@ import {ClientesComponent} from './clientes/clientes.component';
 import {PedidosComponent} from './pedidos/pedidos.component';
 import {MateriaPrimaComponent} from './materia-prima/materia-prima.component';
 import {VentasComponent} from './ventas/ventas.component';
+import { LoginComponent } from './login/login.component';
+import { AuthGuard } from './auth.guard';
+import { RoleGuard } from './role.guard';
 
 export const routes: Routes = [
   {path: 'home', component: HomeComponent},
@@ -13,5 +16,9 @@ export const routes: Routes = [
   {path: 'pedidos', component: PedidosComponent},
   {path: 'materia-prima', component: MateriaPrimaComponent},
   {path: 'ventas', component: VentasComponent},
-  {path: '', redirectTo: '/home', pathMatch: 'full'}
+  { path: 'login', component: LoginComponent },
+  { path: 'admin', canActivate: [AuthGuard, RoleGuard], data: { role: 'ADMIN' }, loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent) },
+  { path: 'empleado', canActivate: [AuthGuard, RoleGuard], data: { role: 'EMPLEADO' }, loadComponent: () => import('./empleado/empleado.component').then(m => m.EmpleadoComponent) },
+  {path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
 ];

@@ -2,16 +2,20 @@ package com.mamboreta.backend.database;
 
 import com.mamboreta.backend.entity.Cliente;
 import com.mamboreta.backend.entity.Producto;
+import com.mamboreta.backend.entity.Usuario;
 import com.mamboreta.backend.repository.ClienteRepository;
 import com.mamboreta.backend.repository.ProductoRepository;
+import com.mamboreta.backend.repository.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Esta clase de configuración se encarga de inicializar la base de datos
@@ -29,7 +33,7 @@ public class DataInitializer {
      * @return Una instancia de CommandLineRunner.
      */
     @Bean
-    public CommandLineRunner initDatabase(ProductoRepository productoRepository, ClienteRepository clienteRepository) {
+    public CommandLineRunner initDatabase(ProductoRepository productoRepository, ClienteRepository clienteRepository, UsuarioRepository usuarioRepository) {
         // La expresión lambda dentro del `run` se ejecuta cuando la aplicación está lista.
         return args -> {
             log.info("Inicializando la base de datos con registros de ejemplo...");
@@ -84,6 +88,22 @@ public class DataInitializer {
             cliente.setObservaciones("Desarrollador de esta app B)");
 
             clienteRepository.save(cliente);
+
+            // Alta de usuarios iniciales
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            Usuario admin = new Usuario();
+            admin.setUsername("admin");
+            admin.setPassword(encoder.encode("admin"));
+            admin.setRoles(Set.of("ADMIN"));
+            admin.setActivo(true);
+            usuarioRepository.save(admin);
+
+            Usuario empleado = new Usuario();
+            empleado.setUsername("empleado");
+            empleado.setPassword(encoder.encode("empleado"));
+            empleado.setRoles(Set.of("EMPLEADO"));
+            empleado.setActivo(true);
+            usuarioRepository.save(empleado);
         };
     }
 }
