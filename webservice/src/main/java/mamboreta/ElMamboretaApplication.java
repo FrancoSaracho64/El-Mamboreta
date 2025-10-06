@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"elMamboreta", "com.mamboreta.backend"})
+@ComponentScan(basePackages = {"mamboreta", "com.mamboreta.backend"})
 @EntityScan(basePackages = "com.mamboreta.backend.entity")
 @EnableJpaRepositories(basePackages = "com.mamboreta.backend.repository")
 public class ElMamboretaApplication {
