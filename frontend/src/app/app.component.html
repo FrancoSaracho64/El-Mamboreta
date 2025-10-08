@@ -1,4 +1,7 @@
-<app-sidebar></app-sidebar>
+<app-sidebar #sidebar></app-sidebar>
 <div class="main-content">
+  <button class="mobile-menu-btn" (click)="sidebar.toggleSidebar()">
+    <span class="material-icons">menu</span>
+  </button>
   <router-outlet></router-outlet>
 </div>

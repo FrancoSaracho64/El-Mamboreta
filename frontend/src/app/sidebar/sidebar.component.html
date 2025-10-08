@@ -7,7 +7,7 @@
     <span class="sidebar-title" *ngIf="expanded">El Mamboreta</span>
   </div>
   <ul class="sidebar-menu">
-    <li *ngFor="let option of menuOptions" [routerLink]="option.route" routerLinkActive="active">
+    <li *ngFor="let option of menuOptions" [routerLink]="option.route" routerLinkActive="active" (click)="onMenuItemClick()">
       <span class="material-icons">{{option.icon}}</span>
       <span class="option-label" *ngIf="expanded">{{option.label}}</span>
     </li>

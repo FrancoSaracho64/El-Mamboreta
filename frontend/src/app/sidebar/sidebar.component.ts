@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { NgIf, NgFor } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   expanded = false;
+  isMobile = false;
   menuOptions: Array<{ label: string; icon: string; route: string }> = [];
   userRole: 'ADMIN' | 'EMPLEADO' | null = null;
   userName: string | null = null;
@@ -23,6 +24,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
+    // 🔹 Detectar si es móvil al inicializar
+    this.checkIfMobile();
+    // 🔹 En desktop, expandir por defecto
+    if (!this.isMobile) {
+      this.expanded = true;
+    }
+    
     // 🔹 Suscribirse a los cambios del rol (BehaviorSubject del AuthService)
     this.roleSub = this.authService.userRole$.subscribe((role) => {
       this.userRole = role as 'ADMIN' | 'EMPLEADO' | null;
@@ -58,9 +66,33 @@ export class SidebarComponent implements OnInit, OnDestroy {
     console.log('[Sidebar] menuOptions:', this.menuOptions);
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkIfMobile();
+    // Si cambiamos de móvil a desktop, expandir automáticamente
+    if (!this.isMobile && !this.expanded) {
+      this.expanded = true;
+    }
+    // Si cambiamos de desktop a móvil, colapsar automáticamente
+    if (this.isMobile && this.expanded) {
+      this.expanded = false;
+    }
+  }
+
+  checkIfMobile() {
+    this.isMobile = window.innerWidth <= 768;
+  }
+
   toggleSidebar() {
     this.expanded = !this.expanded;
     console.log('[Sidebar] toggleSidebar, expanded:', this.expanded);
+  }
+
+  onMenuItemClick() {
+    // En móviles, cerrar la sidebar cuando se hace clic en un elemento del menú
+    if (this.isMobile) {
+      this.expanded = false;
+    }
   }
 
   logout() {

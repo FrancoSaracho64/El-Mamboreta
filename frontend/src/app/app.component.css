@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+.main-content {
+  margin-left: 60px;
+  padding: 20px;
+  transition: margin-left 0.3s cubic-bezier(.4, 0, .2, 1);
+  min-height: 100vh;
+  position: relative;
+}
+
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: #ffe4ef;
+  border: 2px solid #f48fb1;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(244, 143, 177, 0.3);
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: #f8bbd0;
+  transform: scale(1.05);
+}
+
+.mobile-menu-btn:active {
+  transform: scale(0.95);
+}
+
+.mobile-menu-btn .material-icons {
+  color: #ad1457;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* Responsive adjustments */
+@media (min-width: 769px) {
+  .main-content {
+    margin-left: 220px; /* Expanded sidebar width */
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 80px 20px 20px 20px; /* Extra top padding for mobile menu button */
+  }
+  
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -59,8 +59,13 @@ public class SecurityConfig {
                 .cors(cors -> {
                 })
                 .authorizeHttpRequests(auth -> auth
+                        // Permitir acceso a archivos estáticos y frontend
+                        .requestMatchers("/", "/index.html", "/login", "/home", "/productos", "/clientes", "/ventas", "/pedidos", "/materia-prima", "/stock").permitAll()
+                        .requestMatchers("/static/**", "/assets/**", "/*.js", "/*.css", "/*.ico", "/*.png", "/*.jpg", "/*.svg").permitAll()
+                        // Permitir acceso a autenticación
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        // APIs protegidas
                         .requestMatchers("/api/productos/**").hasAnyRole("ADMIN", "EMPLEADO")
                         .requestMatchers("/api/clientes/**").hasAnyRole("ADMIN", "EMPLEADO")
                         .requestMatchers("/api/pedidos/**").hasAnyRole("ADMIN", "EMPLEADO")
@@ -69,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/telefonos/**").hasAnyRole("ADMIN", "EMPLEADO")
                         .requestMatchers("/api/redsocial/**").hasAnyRole("ADMIN", "EMPLEADO")
                         .requestMatchers("/api/documentos/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        // Rutas de roles específicos
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                         .requestMatchers("/empleado/**").hasAnyRole("ADMIN", "EMPLEADO")
                         .anyRequest().authenticated()
