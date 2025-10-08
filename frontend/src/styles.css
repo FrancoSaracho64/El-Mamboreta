@@ -1,1 +1,107 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --primary-pink: #ffe4ef;
+  --accent-pink: #f8bbd0;
+  --active-pink: #f48fb1;
+  --text-main: #ad1457;
+  --card-bg: #fff;
+  --card-shadow: 0 2px 8px rgba(244,143,177,0.08);
+  --border-radius: 14px;
+  --transition: .25s cubic-bezier(.4,0,.2,1);
+}
+
+body {
+  background: var(--primary-pink);
+  color: var(--text-main);
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  letter-spacing: 0.01em;
+}
+
+@media (min-width: 769px) {
+  .main-content {
+    margin-left: 220px;
+    padding: 2rem;
+    height: 100vh;
+    overflow-y: auto;
+    transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  padding: 2rem 1.5rem;
+  margin: 1.5rem 0;
+  transition: box-shadow var(--transition);
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(244,143,177,0.18);
+}
+
+.btn {
+  background: var(--accent-pink);
+  color: var(--text-main);
+  border: none;
+  border-radius: 8px;
+  padding: 0.65em 1.5em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.btn:hover, .btn:focus {
+  background: var(--active-pink);
+  color: #fff;
+}
+
+input, select, textarea {
+  border: 1px solid var(--accent-pink);
+  border-radius: 8px;
+  padding: 0.5em 1em;
+  font-size: 1em;
+  outline: none;
+  margin-bottom: 1em;
+  background: #fff;
+  color: var(--text-main);
+  transition: border-color var(--transition);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--active-pink);
+}
+
+::selection {
+  background: var(--accent-pink);
+  color: #fff;
+}

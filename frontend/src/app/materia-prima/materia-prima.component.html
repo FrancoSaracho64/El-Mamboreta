@@ -1,51 +1,30 @@
 <div class="container">
-  <div class="header">
-    <h1>🔧 Gestión de Materia Prima</h1>
-    <button class="btn-primary" type="button" (click)="mostrarFormulario()">
+  <div class="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700;">🔧 Gestión de Materia Prima</h1>
+    <button class="btn" type="button" (click)="mostrarFormulario()">
       + Nueva Materia Prima
     </button>
   </div>
 
   <!-- Formulario de Materia Prima -->
-  <div class="form-container" *ngIf="mostrarForm">
-    <h3>{{ materiaPrimaEditando ? 'Editar Materia Prima' : 'Nueva Materia Prima' }}</h3>
-
-    <form (ngSubmit)="guardarMateriaPrima()" #materiaPrimaForm="ngForm">
-      <div class="form-group">
+  <div class="card" *ngIf="mostrarForm" style="margin-bottom: 2rem;">
+    <h3 style="margin-top: 0;">{{ materiaPrimaEditando ? 'Editar Materia Prima' : 'Nueva Materia Prima' }}</h3>
+    <form (ngSubmit)="guardarMateriaPrima()" #materiaPrimaForm="ngForm" style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
+      <div style="flex: 1 1 220px; min-width: 220px;">
         <label>Nombre *</label>
-        <input
-          type="text"
-          [(ngModel)]="materiaPrimaActual.nombre"
-          name="nombre"
-          required
-        />
+        <input type="text" [(ngModel)]="materiaPrimaActual.nombre" name="nombre" required />
       </div>
-
-      <div class="form-group">
+      <div style="flex: 2 1 350px; min-width: 250px;">
         <label>Descripción</label>
-        <textarea
-          [(ngModel)]="materiaPrimaActual.descripcion"
-          name="descripcion"
-          rows="3"
-        ></textarea>
+        <textarea [(ngModel)]="materiaPrimaActual.descripcion" name="descripcion" rows="2"></textarea>
       </div>
-
-      <div class="form-group">
+      <div style="flex: 1 1 120px; min-width: 120px;">
         <label>Stock</label>
-        <input
-          type="number"
-          [(ngModel)]="materiaPrimaActual.stock"
-          name="stock"
-          min="0"
-        />
+        <input type="number" [(ngModel)]="materiaPrimaActual.stock" name="stock" min="0" />
       </div>
-
-      <div class="form-group">
+      <div style="flex: 1 1 180px; min-width: 180px;">
         <label>Unidad de Medida</label>
-        <select
-          [(ngModel)]="materiaPrimaActual.unidadMedida"
-          name="unidadMedida"
-        >
+        <select [(ngModel)]="materiaPrimaActual.unidadMedida" name="unidadMedida">
           <option value="">Seleccionar unidad</option>
           <option value="KG">Kilogramos</option>
           <option value="L">Litros</option>
@@ -53,100 +32,70 @@
           <option value="UNIDAD">Unidades</option>
         </select>
       </div>
-
-      <div class="form-actions">
-        <button
-          type="submit"
-          class="btn-success"
-          [disabled]="!materiaPrimaForm.valid"
-        >
+      <div style="flex: 1 1 100%; display: flex; gap: 1rem; margin-top: 1rem;">
+        <button type="submit" class="btn" [disabled]="!materiaPrimaForm.valid">
           {{ materiaPrimaEditando ? 'Actualizar' : 'Guardar' }}
         </button>
-        <button
-          type="button"
-          class="btn-secondary"
-          (click)="cancelarEdicion()"
-        >
-          Cancelar
-        </button>
+        <button type="button" class="btn" style="background: #fff; color: var(--active-pink); border: 1px solid var(--active-pink);" (click)="cancelarEdicion()">Cancelar</button>
       </div>
     </form>
   </div>
 
   <!-- Lista de Materia Prima -->
-  <div class="table-container">
-    <div class="search-bar">
-      <input
-        type="text"
-        placeholder="Buscar materia prima..."
-        [(ngModel)]="terminoBusqueda"
-        (input)="filtrarMateriaPrima()"
-      />
+  <div class="card">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+      <input type="text" placeholder="Buscar materia prima..." [(ngModel)]="terminoBusqueda" (input)="filtrarMateriaPrima()" style="max-width: 250px;">
     </div>
-
-    <table class="data-table" *ngIf="materiaPrimaFiltrada.length > 0">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Descripción</th>
-        <th>Stock</th>
-        <th>Unidad</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let materia of materiaPrimaFiltrada">
-        <td>{{ materia.id }}</td>
-        <td>{{ materia.nombre }}</td>
-        <td>{{ materia.descripcion }}</td>
-        <td>
-            <span
-              class="stock"
-              [class.bajo]="materia.stock < 10"
-              [class.medio]="materia.stock >= 10 && materia.stock < 50"
-            >
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse;" *ngIf="materiaPrimaFiltrada.length > 0">
+        <thead>
+        <tr style="background: var(--accent-pink); color: var(--text-main);">
+          <th style="padding: 0.75em 0.5em;">ID</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Stock</th>
+          <th>Unidad</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let materia of materiaPrimaFiltrada" style="border-bottom: 1px solid var(--accent-pink);">
+          <td>{{ materia.id }}</td>
+          <td>{{ materia.nombre }}</td>
+          <td>{{ materia.descripcion }}</td>
+          <td>
+            <span style="font-weight: 600;" [style.color]="materia.stock < 10 ? '#d32f2f' : (materia.stock < 50 ? '#fbc02d' : '#388e3c')">
               {{ materia.stock }}
             </span>
-        </td>
-        <td>{{ materia.unidadMedida }}</td>
-        <td>
-            <span
-              class="status"
-              [class.activo]="materia.activo"
-              [class.inactivo]="!materia.activo"
-            >
+          </td>
+          <td>{{ materia.unidadMedida }}</td>
+          <td>
+            <span [ngStyle]="{
+              'padding': '0.25em 0.75em',
+              'border-radius': '8px',
+              'font-weight': '600',
+              'background': materia.activo ? 'var(--accent-pink)' : '#eee',
+              'color': materia.activo ? 'var(--text-main)' : '#888'
+            }">
               {{ materia.activo ? 'Activo' : 'Inactivo' }}
             </span>
-        </td>
-        <td class="actions">
-          <button
-            class="btn-edit"
-            type="button"
-            (click)="editarMateriaPrima(materia)"
-          >
-            ✏️
-          </button>
-          <button
-            class="btn-delete"
-            type="button"
-            (click)="eliminarMateriaPrima(materia.id)"
-          >
-            🗑️
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-
-    <div *ngIf="materiaPrimaFiltrada.length === 0" class="no-data">
+          </td>
+          <td style="display: flex; gap: 0.5em;">
+            <button class="btn" style="padding: 0.3em 0.8em; font-size: 1.1em;" type="button" (click)="editarMateriaPrima(materia)">✏️</button>
+            <button class="btn" style="padding: 0.3em 0.8em; font-size: 1.1em; background: #fff; color: #d32f2f; border: 1px solid #d32f2f;" type="button" (click)="eliminarMateriaPrima(materia.id)">🗑️</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="materiaPrimaFiltrada.length === 0" style="padding: 2em; text-align: center; color: #888;">
       No se encontró materia prima
     </div>
   </div>
 
-  <div class="footer-actions">
-    <button class="btn-back" type="button" (click)="volverAlMenu()">
+  <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
+    <button class="btn" type="button" style="background: #fff; color: var(--active-pink); border: 1px solid var(--active-pink);" (click)="volverAlMenu()">
       ← Volver al Menú
     </button>
   </div>

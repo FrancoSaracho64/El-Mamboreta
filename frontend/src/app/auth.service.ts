@@ -20,6 +20,11 @@ export class AuthService {
   );
   userRole$ = this.userRoleSubject.asObservable(); // 🔹 para suscribirse desde componentes
 
+  private userNameSubject = new BehaviorSubject<string | null>(
+    this.isBrowser ? localStorage.getItem('username') : null
+  );
+  userName$ = this.userNameSubject.asObservable();
+
   constructor(private http: HttpClient, private router: Router) {
   }
 
@@ -43,6 +48,12 @@ export class AuthService {
         }
         this.userRoleSubject.next(newRole);
 
+        // 🔹 Guarda username
+        if (user.username && this.isBrowser) {
+          localStorage.setItem('username', user.username);
+        }
+        this.userNameSubject.next(user.username || null);
+
         // 🔹 Redirige según rol
         if (newRole === 'ADMIN') {
           this.router.navigate(['/admin']);
@@ -57,11 +68,13 @@ export class AuthService {
     this.http.post(`${this.apiUrl}/logout`, {}).subscribe(() => {
       this.loggedIn.next(false);
       this.userRoleSubject.next(null);
+      this.userNameSubject.next(null);
 
       if (this.isBrowser) {
         localStorage.removeItem('loggedIn');
         localStorage.removeItem('userRole');
         localStorage.removeItem('token');
+        localStorage.removeItem('username');
       }
 
       this.router.navigate(['/login']);
@@ -78,4 +91,9 @@ export class AuthService {
   getRole(): string | null {
     return this.userRoleSubject.value;
   }
+
+  getUserName(): string | null {
+    return this.userNameSubject.value;
+  }
 }
+

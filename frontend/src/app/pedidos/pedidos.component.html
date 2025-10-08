@@ -1,14 +1,14 @@
 <div class="container">
-  <div class="header">
-    <h1>📋 Gestión de Pedidos</h1>
-    <button class="btn-primary" (click)="mostrarFormulario()">+ Nuevo Pedido</button>
+  <div class="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700;">📋 Gestión de Pedidos</h1>
+    <button class="btn" (click)="mostrarFormulario()">+ Nuevo Pedido</button>
   </div>
 
   <!-- Formulario de Pedido -->
-  <div class="form-container" *ngIf="mostrarForm">
-    <h3>{{ pedidoEditando ? 'Editar Pedido' : 'Nuevo Pedido' }}</h3>
-    <form (ngSubmit)="guardarPedido()" #pedidoForm="ngForm">
-      <div class="form-group">
+  <div class="card" *ngIf="mostrarForm" style="margin-bottom: 2rem;">
+    <h3 style="margin-top: 0;">{{ pedidoEditando ? 'Editar Pedido' : 'Nuevo Pedido' }}</h3>
+    <form (ngSubmit)="guardarPedido()" #pedidoForm="ngForm" style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
+      <div style="flex: 1 1 220px; min-width: 220px;">
         <label>Cliente *</label>
         <select [(ngModel)]="pedido.clienteId" name="clienteId" required>
           <option value="">Seleccionar cliente</option>
@@ -17,8 +17,7 @@
           </option>
         </select>
       </div>
-
-      <div class="form-group">
+      <div style="flex: 1 1 180px; min-width: 180px;">
         <label>Estado *</label>
         <select [(ngModel)]="pedido.estado" name="estado" required>
           <option value="">Seleccionar estado</option>
@@ -28,15 +27,14 @@
           <option value="CANCELADO">Cancelado</option>
         </select>
       </div>
-
-      <div class="form-group">
+      <div style="flex: 2 1 350px; min-width: 250px;">
         <label>Productos</label>
-        <div class="productos-seleccion">
-          <div *ngFor="let producto of productos" class="producto-item">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5em;">
+          <div *ngFor="let producto of productos" style="background: var(--primary-pink); border-radius: 8px; padding: 0.5em 1em; min-width: 180px; display: flex; align-items: center;">
             <input type="checkbox"
                    [id]="'producto-' + producto.id"
                    (change)="toggleProducto(producto.id, $event)">
-            <label [for]="'producto-' + producto.id">
+            <label [for]="'producto-' + producto.id" style="margin-left: 0.5em;">
               {{ producto.nombre }} - ${{ producto.precio | number:'1.2-2' }}
             </label>
             <input type="number"
@@ -44,62 +42,68 @@
                    [(ngModel)]="producto.cantidad"
                    [disabled]="!productosSeleccionados.includes(producto.id)"
                    name="cantidad-{{producto.id}}"
-                   placeholder="Cantidad">
+                   placeholder="Cantidad"
+                   style="margin-left: 0.5em; max-width: 80px;">
           </div>
         </div>
       </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn-success" [disabled]="!pedidoForm.valid">
+      <div style="flex: 1 1 100%; display: flex; gap: 1rem; margin-top: 1rem;">
+        <button type="submit" class="btn" [disabled]="!pedidoForm.valid">
           {{ pedidoEditando ? 'Actualizar' : 'Guardar' }}
         </button>
-        <button type="button" class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+        <button type="button" class="btn" style="background: #fff; color: var(--active-pink); border: 1px solid var(--active-pink);" (click)="cancelarEdicion()">Cancelar</button>
       </div>
     </form>
   </div>
 
   <!-- Lista de Pedidos -->
-  <div class="table-container">
-    <div class="search-bar">
-      <input type="text" placeholder="Buscar pedidos..." [(ngModel)]="terminoBusqueda" (input)="filtrarPedidos()">
+  <div class="card">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+      <input type="text" placeholder="Buscar pedidos..." [(ngModel)]="terminoBusqueda" (input)="filtrarPedidos()" style="max-width: 250px;">
     </div>
-
-    <table class="data-table">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Cliente</th>
-        <th>Estado</th>
-        <th>Productos</th>
-        <th>Fecha</th>
-        <th>Acciones</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let pedido of pedidosFiltrados">
-        <td>{{ pedido.id }}</td>
-        <td>{{ obtenerNombreCliente(pedido.clienteId) }}</td>
-        <td>
-            <span class="estado" [class]="'estado-' + pedido.estado.toLowerCase()">
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+        <tr style="background: var(--accent-pink); color: var(--text-main);">
+          <th style="padding: 0.75em 0.5em;">ID</th>
+          <th>Cliente</th>
+          <th>Estado</th>
+          <th>Productos</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let pedido of pedidosFiltrados" style="border-bottom: 1px solid var(--accent-pink);">
+          <td>{{ pedido.id }}</td>
+          <td>{{ obtenerNombreCliente(pedido.clienteId) }}</td>
+          <td>
+            <span [ngStyle]="{
+              'padding': '0.25em 0.75em',
+              'border-radius': '8px',
+              'font-weight': '600',
+              'background': pedido.estado === 'COMPLETADO' ? '#c8e6c9' : (pedido.estado === 'EN_PROCESO' ? '#fff9c4' : (pedido.estado === 'CANCELADO' ? '#ffcdd2' : 'var(--accent-pink)')),
+              'color': pedido.estado === 'COMPLETADO' ? '#388e3c' : (pedido.estado === 'EN_PROCESO' ? '#fbc02d' : (pedido.estado === 'CANCELADO' ? '#d32f2f' : 'var(--text-main)'))
+            }">
               {{ pedido.estado }}
             </span>
-        </td>
-        <td>{{ pedido.productos?.length || 0 }} productos</td>
-        <td>{{ pedido.fechaSolicitado | date:'dd/MM/yyyy HH:mm' }}</td>
-        <td class="actions">
-          <button class="btn-edit" (click)="editarPedido(pedido)">✏️</button>
-          <button class="btn-delete" (click)="eliminarPedido(pedido.id)">🗑️</button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-
-    <div *ngIf="pedidosFiltrados.length === 0" class="no-data">
+          </td>
+          <td>{{ pedido.productos?.length || 0 }} productos</td>
+          <td>{{ pedido.fechaSolicitado | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td style="display: flex; gap: 0.5em;">
+            <button class="btn" style="padding: 0.3em 0.8em; font-size: 1.1em;" (click)="editarPedido(pedido)">✏️</button>
+            <button class="btn" style="padding: 0.3em 0.8em; font-size: 1.1em; background: #fff; color: #d32f2f; border: 1px solid #d32f2f;" (click)="eliminarPedido(pedido.id)">🗑️</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="pedidosFiltrados.length === 0" style="padding: 2em; text-align: center; color: #888;">
       No se encontraron pedidos
     </div>
   </div>
 
-  <div class="footer-actions">
-    <button class="btn-back" (click)="volverAlMenu()">← Volver al Menú</button>
+  <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
+    <button class="btn" style="background: #fff; color: var(--active-pink); border: 1px solid var(--active-pink);" (click)="volverAlMenu()">← Volver al Menú</button>
   </div>
 </div>

@@ -15,8 +15,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
   expanded = false;
   menuOptions: Array<{ label: string; icon: string; route: string }> = [];
   userRole: 'ADMIN' | 'EMPLEADO' | null = null;
+  userName: string | null = null;
 
   private roleSub!: Subscription;
+  private nameSub!: Subscription;
 
   constructor(private authService: AuthService) {}
 
@@ -24,8 +26,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     // 🔹 Suscribirse a los cambios del rol (BehaviorSubject del AuthService)
     this.roleSub = this.authService.userRole$.subscribe((role) => {
       this.userRole = role as 'ADMIN' | 'EMPLEADO' | null;
-      console.log('[Sidebar] ngOnInit, userRole:', this.userRole);
       this.buildMenu();
+    });
+    // 🔹 Suscribirse al nombre de usuario
+    this.nameSub = this.authService.userName$.subscribe((name) => {
+      this.userName = name;
     });
   }
 
@@ -65,5 +70,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.roleSub) this.roleSub.unsubscribe();
+    if (this.nameSub) this.nameSub.unsubscribe();
   }
 }
+

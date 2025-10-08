@@ -1,91 +1,92 @@
 <div class="container">
-  <div class="header">
-    <h1>👥 Gestión de Clientes</h1>
-    <button class="btn-primary" (click)="mostrarFormulario()">+ Nuevo Cliente</button>
+  <div class="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700;">👥 Gestión de Clientes</h1>
+    <button class="btn" (click)="mostrarFormulario()">+ Nuevo Cliente</button>
   </div>
 
   <!-- Formulario de Cliente -->
-  <div class="form-container" *ngIf="mostrarForm">
-    <h3>{{ clienteEditando ? 'Editar Cliente' : 'Nuevo Cliente' }}</h3>
-    <form (ngSubmit)="guardarCliente()" #clienteForm="ngForm">
-      <div class="form-group">
+  <div class="card" *ngIf="mostrarForm" style="margin-bottom: 2rem;">
+    <h3 style="margin-top: 0;">{{ clienteEditando ? 'Editar Cliente' : 'Nuevo Cliente' }}</h3>
+    <form (ngSubmit)="guardarCliente()" #clienteForm="ngForm" style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
+      <div style="flex: 1 1 220px; min-width: 220px;">
         <label>Nombre *</label>
         <input type="text" [(ngModel)]="cliente.nombre" name="nombre" required>
       </div>
-
-      <div class="form-group">
+      <div style="flex: 1 1 180px; min-width: 180px;">
         <label>Apellido</label>
         <input type="text" [(ngModel)]="cliente.apellido" name="apellido">
       </div>
-
-      <div class="form-group">
+      <div style="flex: 1 1 220px; min-width: 220px;">
         <label>Email</label>
         <input type="email" [(ngModel)]="cliente.email" name="email">
       </div>
-
-      <div class="form-group">
+      <div style="flex: 1 1 300px; min-width: 220px;">
         <label>Dirección</label>
-        <textarea [(ngModel)]="cliente.direccion" name="direccion" rows="3"></textarea>
+        <textarea [(ngModel)]="cliente.direccion" name="direccion" rows="2"></textarea>
       </div>
-
-      <div class="form-group">
+      <div style="flex: 2 1 300px; min-width: 220px;">
         <label>Observaciones</label>
-        <textarea [(ngModel)]="cliente.observaciones" name="observaciones" rows="3"></textarea>
+        <textarea [(ngModel)]="cliente.observaciones" name="observaciones" rows="2"></textarea>
       </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn-success" [disabled]="!clienteForm.valid">
+      <div style="flex: 1 1 100%; display: flex; gap: 1rem; margin-top: 1rem;">
+        <button type="submit" class="btn" [disabled]="!clienteForm.valid">
           {{ clienteEditando ? 'Actualizar' : 'Guardar' }}
         </button>
-        <button type="button" class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+        <button type="button" class="btn" style="background: #fff; color: var(--active-pink); border: 1px solid var(--active-pink);" (click)="cancelarEdicion()">Cancelar</button>
       </div>
     </form>
   </div>
 
   <!-- Lista de Clientes -->
-  <div class="table-container">
-    <div class="search-bar">
-      <input type="text" placeholder="Buscar clientes..." [(ngModel)]="terminoBusqueda" (input)="filtrarClientes()">
+  <div class="card">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+      <input type="text" placeholder="Buscar clientes..." [(ngModel)]="terminoBusqueda" (input)="filtrarClientes()" style="max-width: 250px;">
     </div>
-
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Email</th>
-          <th>Dirección</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let cliente of clientesFiltrados">
-          <td>{{ cliente.id }}</td>
-          <td>{{ cliente.nombre }}</td>
-          <td>{{ cliente.apellido }}</td>
-          <td>{{ cliente.email }}</td>
-          <td>{{ cliente.direccion }}</td>
-          <td>
-            <span class="status" [class.activo]="cliente.activo" [class.inactivo]="!cliente.activo">
-              {{ cliente.activo ? 'Activo' : 'Inactivo' }}
-            </span>
-          </td>
-          <td class="actions">
-            <button class="btn-edit" (click)="editarCliente(cliente)">✏️</button>
-            <button class="btn-delete" (click)="eliminarCliente(cliente.id!)">🗑️</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div *ngIf="clientesFiltrados.length === 0" class="no-data">
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: var(--accent-pink); color: var(--text-main);">
+            <th style="padding: 0.75em 0.5em;">ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Dirección</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientesFiltrados" style="border-bottom: 1px solid var(--accent-pink);">
+            <td>{{ cliente.id }}</td>
+            <td>{{ cliente.nombre }}</td>
+            <td>{{ cliente.apellido }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.direccion }}</td>
+            <td>
+              <span [ngStyle]="{
+                'padding': '0.25em 0.75em',
+                'border-radius': '8px',
+                'font-weight': '600',
+                'background': cliente.activo ? 'var(--accent-pink)' : '#eee',
+                'color': cliente.activo ? 'var(--text-main)' : '#888'
+              }">
+                {{ cliente.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td style="display: flex; gap: 0.5em;">
+              <button class="btn" style="padding: 0.3em 0.8em; font-size: 1.1em;" (click)="editarCliente(cliente)">✏️</button>
+              <button class="btn" style="padding: 0.3em 0.8em; font-size: 1.1em; background: #fff; color: #d32f2f; border: 1px solid #d32f2f;" (click)="eliminarCliente(cliente.id!)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="clientesFiltrados.length === 0" style="padding: 2em; text-align: center; color: #888;">
       No se encontraron clientes
     </div>
   </div>
 
-  <div class="footer-actions">
-    <button class="btn-back" (click)="volverAlMenu()">← Volver al Menú</button>
+  <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
+    <button class="btn" style="background: #fff; color: var(--active-pink); border: 1px solid var(--active-pink);" (click)="volverAlMenu()">← Volver al Menú</button>
   </div>
 </div>

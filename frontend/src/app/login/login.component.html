@@ -1,11 +1,19 @@
-<div class="login-container">
-  <h2>Iniciar sesión</h2>
-  <form (ngSubmit)="login()">
-    <label for="username">Usuario:</label>
-    <input id="username" [(ngModel)]="username" name="username" required>
-    <label for="password">Contraseña:</label>
-    <input id="password" type="password" [(ngModel)]="password" name="password" required>
-    <button type="submit">Ingresar</button>
-    <div *ngIf="error" class="error">{{ error }}</div>
-  </form>
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--primary-pink);">
+  <div class="card" style="min-width: 350px; max-width: 400px; margin: 2rem auto; padding: 2.5rem 2rem; box-shadow: 0 4px 24px rgba(244,143,177,0.12);">
+    <h2 style="text-align: center; margin-bottom: 2rem; color: var(--text-main);">Iniciar sesión</h2>
+    <form (ngSubmit)="login()" style="display: flex; flex-direction: column; gap: 1.25rem;">
+      <div style="display: flex; flex-direction: column;">
+        <label for="username" style="margin-bottom: 0.25em;">Usuario</label>
+        <input id="username" [(ngModel)]="username" name="username" required autocomplete="username">
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <label for="password" style="margin-bottom: 0.25em;">Contraseña</label>
+        <input id="password" type="password" [(ngModel)]="password" name="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn" style="width: 100%; margin-top: 0.5rem;">Ingresar</button>
+      <div *ngIf="error" style="color: #d32f2f; background: #ffcdd2; border-radius: 8px; padding: 0.75em 1em; text-align: center; font-size: 1em;">
+        {{ error }}
+      </div>
+    </form>
+  </div>
 </div>

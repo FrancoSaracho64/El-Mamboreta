@@ -1,3 +1,4 @@
+<div class="sidebar-overlay" *ngIf="expanded" (click)="toggleSidebar()"></div>
 <nav class="sidebar" [class.expanded]="expanded">
   <div class="sidebar-header">
     <button class="toggle-btn" (click)="toggleSidebar()">
@@ -12,6 +13,10 @@
     </li>
   </ul>
   <div class="sidebar-footer">
+    <div *ngIf="expanded && userName" class="sidebar-user" style="margin-bottom: 1.5em;">
+      <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">account_circle</span>
+      <span class="user-name">{{ userName }}</span>
+    </div>
     <button class="logout-btn" (click)="logout()">
       <span class="material-icons">logout</span>
       <span class="option-label" *ngIf="expanded">Cerrar sesión</span>
