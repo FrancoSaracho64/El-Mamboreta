@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {environment} from '../../environments/environment';
 import {CommonModule} from "@angular/common";
@@ -19,7 +19,7 @@ interface Cliente {
 @Component({
   selector: 'app-clientes',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './clientes.component.html',
   styleUrls: ['./clientes.component.css']
 })
@@ -51,7 +51,7 @@ export class ClientesComponent implements OnInit {
   }
 
   cargarClientes(): void {
-    this.http.get<Cliente[]>(`${environment.apiUrl}/clientes`).subscribe({
+  this.http.get<Cliente[]>(`${environment.apiUrl}/clientes`).subscribe({
       next: (data) => {
         this.clientes = data;
         this.clientesFiltrados = [...this.clientes];
@@ -76,7 +76,7 @@ export class ClientesComponent implements OnInit {
 
   guardarCliente(): void {
     if (this.clienteEditando) {
-      this.http.put<Cliente>(`${environment.apiUrl}/clientes/${this.clienteEditando.id}`, this.cliente)
+  this.http.put<Cliente>(`${environment.apiUrl}/clientes/${this.clienteEditando.id}`, this.cliente)
         .subscribe({
           next: (clienteActualizado) => {
             const index = this.clientes.findIndex(c => c.id === clienteActualizado.id);
@@ -93,7 +93,7 @@ export class ClientesComponent implements OnInit {
           }
         });
     } else {
-      this.http.post<Cliente>(`${environment.apiUrl}/clientes`, this.cliente)
+  this.http.post<Cliente>(`${environment.apiUrl}/clientes`, this.cliente)
         .subscribe({
           next: (nuevoCliente) => {
             this.clientes.push(nuevoCliente);
@@ -114,7 +114,7 @@ export class ClientesComponent implements OnInit {
   eliminarCliente(id: number): void {
     if (!id) return;
     if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
-      this.http.delete(`${environment.apiUrl}/clientes/${id}`).subscribe({
+  this.http.delete(`${environment.apiUrl}/clientes/${id}`).subscribe({
         next: () => {
           this.clientes = this.clientes.filter(c => c.id !== id);
           this.filtrarClientes();

@@ -44,8 +44,8 @@ public class AuthController {
                 .map(a -> a.getAuthority().replace("ROLE_", ""))
                 .collect(Collectors.toSet());
 
-        // Generar JWT
-        String token = jwtUtil.generateToken(userDetails.getUsername());
+    // Generar JWT con roles
+    String token = jwtUtil.generateToken(userDetails.getUsername(), roles);
 
         // Devolver token y roles
         return ResponseEntity.ok(Map.of(

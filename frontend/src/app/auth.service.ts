@@ -14,7 +14,11 @@ export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(
     this.isBrowser ? !!localStorage.getItem('loggedIn') : false
   );
-  private userRole: string | null = this.isBrowser ? localStorage.getItem('userRole') : null;
+
+  private userRoleSubject = new BehaviorSubject<string | null>(
+    this.isBrowser ? localStorage.getItem('userRole') : null
+  );
+  userRole$ = this.userRoleSubject.asObservable(); // 🔹 para suscribirse desde componentes
 
   constructor(private http: HttpClient, private router: Router) {
   }
@@ -27,19 +31,22 @@ export class AuthService {
           localStorage.setItem('loggedIn', 'true');
         }
 
-        // 🔹 Guarda el token que viene del backend
+        // 🔹 Guarda token
         if (user.token && this.isBrowser) {
           localStorage.setItem('token', user.token);
         }
 
-        this.userRole = user.roles && user.roles.length > 0 ? user.roles[0] : null;
-        if (this.userRole && this.isBrowser) {
-          localStorage.setItem('userRole', this.userRole);
+        // 🔹 Guarda rol y emite
+        const newRole = user.roles && user.roles.length > 0 ? user.roles[0] : null;
+        if (newRole && this.isBrowser) {
+          localStorage.setItem('userRole', newRole);
         }
+        this.userRoleSubject.next(newRole);
 
-        if (this.userRole === 'ADMIN') {
+        // 🔹 Redirige según rol
+        if (newRole === 'ADMIN') {
           this.router.navigate(['/admin']);
-        } else if (this.userRole === 'EMPLEADO') {
+        } else if (newRole === 'EMPLEADO') {
           this.router.navigate(['/empleado']);
         }
       })
@@ -49,11 +56,12 @@ export class AuthService {
   logout(): void {
     this.http.post(`${this.apiUrl}/logout`, {}).subscribe(() => {
       this.loggedIn.next(false);
-      this.userRole = null;
+      this.userRoleSubject.next(null);
 
       if (this.isBrowser) {
         localStorage.removeItem('loggedIn');
         localStorage.removeItem('userRole');
+        localStorage.removeItem('token');
       }
 
       this.router.navigate(['/login']);
@@ -67,11 +75,7 @@ export class AuthService {
     );
   }
 
-  getCurrentUser(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/me`);
-  }
-
   getRole(): string | null {
-    return this.userRole || (this.isBrowser ? localStorage.getItem('userRole') : null);
+    return this.userRoleSubject.value;
   }
 }

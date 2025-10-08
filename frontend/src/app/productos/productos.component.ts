@@ -1,9 +1,9 @@
-import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import {environment} from '../../environments/environment';
 import {CommonModule} from "@angular/common";
+import {FormsModule} from '@angular/forms';
+import {environment} from '../../environments/environment';
 
 interface Producto {
   id?: number;
@@ -17,7 +17,7 @@ interface Producto {
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css']
 })

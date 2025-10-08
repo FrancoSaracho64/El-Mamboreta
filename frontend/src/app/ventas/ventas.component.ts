@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {environment} from '../../environments/environment';
 import {CommonModule} from "@angular/common";
@@ -29,7 +29,7 @@ interface Venta {
   selector: 'app-ventas',
   templateUrl: './ventas.component.html',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   styleUrl: './ventas.component.css'
 })
 export class VentasComponent implements OnInit {
@@ -57,7 +57,7 @@ export class VentasComponent implements OnInit {
 
   cargarDatos(): void {
     // Cargar clientes
-    this.http.get<Cliente[]>(`${environment.apiUrl}/clientes`).subscribe({
+  this.http.get<Cliente[]>(`${environment.apiUrl}/clientes`).subscribe({
       next: (data) => {
         this.clientes = data;
       },
@@ -67,7 +67,7 @@ export class VentasComponent implements OnInit {
     });
 
     // Cargar productos
-    this.http.get<Producto[]>(`${environment.apiUrl}/productos`).subscribe({
+  this.http.get<Producto[]>(`${environment.apiUrl}/productos`).subscribe({
       next: (data) => {
         this.productos = data;
       },
@@ -81,7 +81,7 @@ export class VentasComponent implements OnInit {
   }
 
   cargarVentas(): void {
-    this.http.get<Venta[]>(`${environment.apiUrl}/ventas`).subscribe({
+  this.http.get<Venta[]>(`${environment.apiUrl}/ventas`).subscribe({
       next: (data) => {
         this.ventas = data;
         this.ventasFiltradas = [...this.ventas];
@@ -133,7 +133,7 @@ export class VentasComponent implements OnInit {
 
     if (this.ventaEditando) {
       // Actualizar venta existente
-      this.http.put<Venta>(`${environment.apiUrl}/ventas/${this.ventaEditando.id}`, this.venta)
+  this.http.put<Venta>(`${environment.apiUrl}/ventas/${this.ventaEditando.id}`, this.venta)
         .subscribe({
           next: (ventaActualizada) => {
             const index = this.ventas.findIndex(v => v.id === ventaActualizada.id);
@@ -156,7 +156,7 @@ export class VentasComponent implements OnInit {
         });
     } else {
       // Crear nueva venta
-      this.http.post<Venta>(`${environment.apiUrl}/ventas`, this.venta)
+  this.http.post<Venta>(`${environment.apiUrl}/ventas`, this.venta)
         .subscribe({
           next: (nuevaVenta) => {
             this.ventas.push(nuevaVenta);

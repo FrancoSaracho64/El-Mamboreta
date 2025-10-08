@@ -60,14 +60,21 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll() // <-- Permitir acceso público
+                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/productos/**").hasAnyRole("ADMIN", "EMPLEADO")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/clientes/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers("/api/pedidos/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers("/api/ventas/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers("/api/materias-primas/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers("/api/telefonos/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers("/api/redsocial/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers("/api/documentos/**").hasAnyRole("ADMIN", "EMPLEADO")
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                         .requestMatchers("/empleado/**").hasAnyRole("ADMIN", "EMPLEADO")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) // Permitir iframes para H2
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex
@@ -96,7 +103,11 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:4200");
+        // Permitir localhost y cualquier IP local (192.168.x.x, 10.x.x.x)
+        config.addAllowedOriginPattern("http://localhost:*");
+        config.addAllowedOriginPattern("http://127.0.0.1:*");
+        config.addAllowedOriginPattern("http://192.168.*.*");
+        config.addAllowedOriginPattern("http://10.*.*.*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+:root {
+  --sidebar-bg: #ffe4ef;
+  --sidebar-hover: #f8bbd0;
+  --sidebar-active: #f48fb1;
+  --sidebar-text: #ad1457;
+  --sidebar-width: 60px;
+  --sidebar-width-expanded: 220px;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  transition: width 0.3s cubic-bezier(.4, 0, .2, 1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar.expanded {
+  width: var(--sidebar-width-expanded);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 8px;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--sidebar-text);
+  font-size: 28px;
+  outline: none;
+  transition: transform 0.2s;
+}
+
+.toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.sidebar-title {
+  margin-left: 12px;
+  font-size: 1.2em;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu li {
+  display: flex;
+  align-items: center;
+  padding: 12px 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 8px;
+  margin: 4px 8px;
+}
+
+.sidebar-menu li:hover {
+  background: var(--sidebar-hover);
+}
+
+.sidebar-menu li.active {
+  background: var(--sidebar-active);
+  color: #fff;
+}
+
+.material-icons {
+  font-size: 24px;
+  margin-right: 0;
+  transition: margin 0.3s;
+}
+
+.sidebar.expanded .material-icons {
+  margin-right: 12px;
+}
+
+.option-label {
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.sidebar:not(.expanded) .option-label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.sidebar-footer {
+  padding: 16px 8px;
+  border-top: 1px solid #f8bbd0;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: var(--sidebar-text);
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+  padding: 8px 0;
+  transition: background 0.2s;
+  border-radius: 8px;
+}
+
+.logout-btn:hover {
+  background: var(--sidebar-hover);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 0;
+    min-width: 0;
+    position: absolute;
+    transition: width 0.3s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .sidebar.expanded {
+    width: var(--sidebar-width-expanded);
+    min-width: var(--sidebar-width-expanded);
+    position: fixed;
+  }
+}

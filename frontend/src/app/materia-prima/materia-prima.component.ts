@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
-import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
+import {Component, OnInit} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {environment} from '../../environments/environment';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 
@@ -17,7 +17,7 @@ interface MateriaPrima {
 @Component({
   selector: 'app-materia-prima',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './materia-prima.component.html',
   styleUrls: ['./materia-prima.component.css']
 })
@@ -35,7 +35,8 @@ export class MateriaPrimaComponent implements OnInit {
   materiaPrimaEditando: MateriaPrima | null = null;
   terminoBusqueda = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+  }
 
   ngOnInit(): void {
     this.cargarMateriaPrima();
@@ -66,8 +67,8 @@ export class MateriaPrimaComponent implements OnInit {
         console.error('Error al cargar materia prima:', error);
         // 🔧 Datos mock para desarrollo local
         this.listaMateriaPrima = [
-          { id: 1, nombre: 'Harina', descripcion: 'Harina de trigo', stock: 50, unidadMedida: 'KG', activo: true },
-          { id: 2, nombre: 'Azúcar', descripcion: 'Azúcar refinada', stock: 3, unidadMedida: 'KG', activo: true }
+          {id: 1, nombre: 'Harina', descripcion: 'Harina de trigo', stock: 50, unidadMedida: 'KG', activo: true},
+          {id: 2, nombre: 'Azúcar', descripcion: 'Azúcar refinada', stock: 3, unidadMedida: 'KG', activo: true}
         ];
         this.materiaPrimaFiltrada = [...this.listaMateriaPrima];
       }
@@ -84,7 +85,7 @@ export class MateriaPrimaComponent implements OnInit {
   /** ✏️ Edita una materia prima existente */
   editarMateriaPrima(materia: MateriaPrima): void {
     this.materiaPrimaEditando = materia;
-    this.materiaPrimaActual = { ...materia };
+    this.materiaPrimaActual = {...materia};
     this.mostrarForm = true;
   }
 
@@ -107,7 +108,7 @@ export class MateriaPrimaComponent implements OnInit {
           // Simular actualización local
           const index = this.listaMateriaPrima.findIndex(m => m.id === this.materiaPrimaEditando?.id);
           if (index !== -1) {
-            this.listaMateriaPrima[index] = { ...this.materiaPrimaActual, id: this.materiaPrimaEditando?.id };
+            this.listaMateriaPrima[index] = {...this.materiaPrimaActual, id: this.materiaPrimaEditando?.id};
           }
           this.filtrarMateriaPrima();
           this.cancelarEdicion();
@@ -128,7 +129,7 @@ export class MateriaPrimaComponent implements OnInit {
           console.error('Error al crear materia prima:', error);
           // Simular creación local
           const nuevoId = Math.max(...this.listaMateriaPrima.map(m => m.id || 0)) + 1;
-          const nuevaMateria = { ...this.materiaPrimaActual, id: nuevoId };
+          const nuevaMateria = {...this.materiaPrimaActual, id: nuevoId};
           this.listaMateriaPrima.push(nuevaMateria);
           this.filtrarMateriaPrima();
           this.cancelarEdicion();

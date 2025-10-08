@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {environment} from '../../environments/environment';
 import {CommonModule} from "@angular/common";
@@ -35,7 +35,7 @@ interface PedidoDTO {
 @Component({
   selector: 'app-pedidos',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './pedidos.component.html',
   styleUrls: ['./pedidos.component.css']
 })
@@ -64,12 +64,12 @@ export class PedidosComponent implements OnInit {
 
   cargarDatos(): void {
     // Cargar clientes primero
-    this.http.get<Cliente[]>(`${environment.apiUrl}/clientes`).subscribe({
+  this.http.get<Cliente[]>(`${environment.apiUrl}/clientes`).subscribe({
       next: clientesData => {
         this.clientes = clientesData;
 
         // Ahora sí cargar productos
-        this.http.get<Producto[]>(`${environment.apiUrl}/productos`).subscribe({
+  this.http.get<Producto[]>(`${environment.apiUrl}/productos`).subscribe({
           next: productosData => this.productos = productosData,
           error: error => console.error('Error al cargar productos:', error)
         });
@@ -83,7 +83,7 @@ export class PedidosComponent implements OnInit {
 
 
   cargarPedidos(): void {
-    this.http.get<Pedido[]>(`${environment.apiUrl}/pedidos`).subscribe({
+  this.http.get<Pedido[]>(`${environment.apiUrl}/pedidos`).subscribe({
       next: data => {
         this.pedidos = data;
         this.pedidosFiltrados = [...this.pedidos];
@@ -135,7 +135,7 @@ export class PedidosComponent implements OnInit {
     };
 
     if (this.pedidoEditando) {
-      this.http.put<Pedido>(`${environment.apiUrl}/pedidos/${this.pedidoEditando.id}`, pedidoDTO)
+  this.http.put<Pedido>(`${environment.apiUrl}/pedidos/${this.pedidoEditando.id}`, pedidoDTO)
         .subscribe({
           next: pedidoActualizado => {
             const index = this.pedidos.findIndex(p => p.id === pedidoActualizado.id);
@@ -146,7 +146,7 @@ export class PedidosComponent implements OnInit {
           error: error => console.error('Error al actualizar pedido:', error)
         });
     } else {
-      this.http.post<Pedido>(`${environment.apiUrl}/pedidos`, pedidoDTO)
+  this.http.post<Pedido>(`${environment.apiUrl}/pedidos`, pedidoDTO)
         .subscribe({
           next: nuevoPedido => {
             this.pedidos.push(nuevoPedido);

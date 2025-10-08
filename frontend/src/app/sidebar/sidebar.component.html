@@ -1,0 +1,20 @@
+<nav class="sidebar" [class.expanded]="expanded">
+  <div class="sidebar-header">
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      <span class="material-icons">menu</span>
+    </button>
+    <span class="sidebar-title" *ngIf="expanded">El Mamboreta</span>
+  </div>
+  <ul class="sidebar-menu">
+    <li *ngFor="let option of menuOptions" [routerLink]="option.route" routerLinkActive="active">
+      <span class="material-icons">{{option.icon}}</span>
+      <span class="option-label" *ngIf="expanded">{{option.label}}</span>
+    </li>
+  </ul>
+  <div class="sidebar-footer">
+    <button class="logout-btn" (click)="logout()">
+      <span class="material-icons">logout</span>
+      <span class="option-label" *ngIf="expanded">Cerrar sesión</span>
+    </button>
+  </div>
+</nav>
