@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 
 public class TrayIconManager {
     private final ConfigurableApplicationContext context;
@@ -54,7 +55,6 @@ public class TrayIconManager {
 
             SystemTray.getSystemTray().add(trayIcon);
 
-            // Notificación emergente al iniciar
             trayIcon.displayMessage(
                     "El Mamboreta",
                     "Aplicación iniciada (versión " + appVersion + ")",
@@ -78,6 +78,7 @@ public class TrayIconManager {
         frame.setSize(360, 420);
         frame.setLayout(new BorderLayout(10, 10));
 
+        // --- Logo ---
         try (InputStream logoStream = getClass().getResourceAsStream("/mambo_logo.jpg")) {
             if (logoStream != null) {
                 ImageIcon logo = new ImageIcon(ImageIO.read(logoStream));
@@ -89,18 +90,50 @@ public class TrayIconManager {
             e.printStackTrace();
         }
 
+        // --- Info Panel (versión + IP) ---
+        String ipAddress = "IP no disponible";
+        try {
+            ipAddress = InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception e) {
+            System.err.println("No se pudo obtener la IP local: " + e.getMessage());
+        }
+
         JLabel versionLabel = new JLabel("Versión " + appVersion, SwingConstants.CENTER);
         versionLabel.setFont(versionLabel.getFont().deriveFont(Font.BOLD, 14f));
 
+        JLabel ipLabel = new JLabel("IP local: " + ipAddress, SwingConstants.CENTER);
+        ipLabel.setFont(ipLabel.getFont().deriveFont(Font.PLAIN, 13f));
+        ipLabel.setForeground(new Color(90, 90, 90));
+
+        // --- Botón detener ---
         JButton stopButton = new JButton("- Detener servidor -");
+        stopButton.setBackground(new Color(245, 199, 215));
+        stopButton.setForeground(new Color(120, 0, 50));
+        stopButton.setFocusPainted(false);
+        stopButton.setFont(stopButton.getFont().deriveFont(Font.BOLD, 13f));
+        stopButton.setBorder(BorderFactory.createLineBorder(new Color(210, 150, 180)));
+        stopButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         stopButton.addActionListener(e -> stopApplication());
 
-        JPanel bottomPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        // --- Panel inferior estilizado ---
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+        bottomPanel.setBackground(Color.WHITE);
+
+        versionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        ipLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        stopButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         bottomPanel.add(versionLabel);
+        bottomPanel.add(Box.createVerticalStrut(4));
+        bottomPanel.add(ipLabel);
+        bottomPanel.add(Box.createVerticalStrut(12));
         bottomPanel.add(stopButton);
 
         frame.add(bottomPanel, BorderLayout.SOUTH);
 
+        // --- Final window setup ---
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
