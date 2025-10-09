@@ -1,40 +1,54 @@
-<div class="menu-container">
-  <h1>El Mamboreta - Sistema de Gestión</h1>
+<div class="home-container">
+  <!-- Header con información del usuario -->
+  <div class="header-section">
+    <h1 class="main-title">
+      <span class="material-icons title-icon">business</span>
+      El Mamboreta - Sistema de Gestión
+    </h1>
+    
+    <div class="user-welcome" *ngIf="userRole">
+      <div class="user-card">
+        <span class="material-icons user-icon">account_circle</span>
+        <div class="user-info">
+          <h3>Bienvenido</h3>
+          <p class="user-role">{{ userRole === 'ADMIN' ? 'Administrador' : 'Empleado' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Grid de opciones del menú -->
   <div class="menu-grid">
-    <div class="menu-card" (click)="navegarA('clientes')">
-      <h3>👥 Clientes</h3>
-      <p>Gestionar información de clientes</p>
+    <div 
+      *ngFor="let option of menuOptions" 
+      class="menu-card material-card"
+      (click)="navegarA(option.route.substring(1))"
+      [attr.data-route]="option.route"
+    >
+      <div class="card-header">
+        <span class="material-icons card-icon">{{ option.icon }}</span>
+        <h3 class="card-title">{{ option.label }}</h3>
+      </div>
+      
+      <div class="card-content">
+        <p class="card-description">{{ option.description }}</p>
+      </div>
+      
+      <div class="card-actions">
+        <button class="action-button" type="button">
+          <span class="material-icons">arrow_forward</span>
+          Acceder
+        </button>
+      </div>
     </div>
 
-    <div class="menu-card" (click)="navegarA('productos')">
-      <h3>📦 Productos</h3>
-      <p>Administrar catálogo de productos</p>
+    <!-- Mensaje cuando no hay opciones disponibles -->
+    <div *ngIf="menuOptions.length === 0" class="no-options-card">
+      <div class="no-options-content">
+        <span class="material-icons no-options-icon">lock</span>
+        <h3>Sin opciones disponibles</h3>
+        <p>Tu rol de usuario no tiene acceso a funcionalidades adicionales</p>
+      </div>
     </div>
-
-    <div class="menu-card" (click)="navegarA('pedidos')">
-      <h3>📋 Pedidos</h3>
-      <p>Gestionar pedidos de clientes</p>
-    </div>
-
-    <div class="menu-card" (click)="navegarA('materia-prima')">
-      <h3>🔧 Materia Prima</h3>
-      <p>Controlar inventario de materiales</p>
-    </div>
-
-    <div class="menu-card" (click)="navegarA('ventas')">
-      <h3>💰 Ventas</h3>
-      <p>Administrar ventas realizadas</p>
-    </div>
-
-    <div class="menu-card" (click)="navegarA('stock')">
-      <h3>📈 Stock</h3>
-      <p>Gestionar y cargar stock de productos</p>
-    </div>
-
-    <!--<div class="menu-card" (click)="navegarA('reportes')">
-      <h3>📊 Reportes</h3>
-      <p>Ver estadísticas y reportes</p>
-    </div>-->
   </div>
 </div>

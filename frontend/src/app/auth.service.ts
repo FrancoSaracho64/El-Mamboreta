@@ -54,12 +54,8 @@ export class AuthService {
         }
         this.userNameSubject.next(user.username || null);
 
-        // 🔹 Redirige según rol
-        if (newRole === 'ADMIN') {
-          this.router.navigate(['/admin']);
-        } else if (newRole === 'EMPLEADO') {
-          this.router.navigate(['/empleado']);
-        }
+        // Se redirecciona al home
+        this.router.navigate(['/home']);
       })
     );
   }

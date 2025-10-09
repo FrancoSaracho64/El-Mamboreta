@@ -4,6 +4,9 @@ import {Router} from '@angular/router';
 import {environment} from '../../environments/environment';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {NotificationService} from '../services/notification.service';
+import {RoleService} from '../services/role.service';
+import {ValidationService} from '../services/validation.service';
 
 interface Cliente {
   id?: number;
@@ -32,8 +35,13 @@ export class ClientesComponent implements OnInit {
   clienteEditando: Cliente | null = null;
   terminoBusqueda = '';
 
-  constructor(private http: HttpClient, private router: Router) {
-  }
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private notificationService: NotificationService,
+    public roleService: RoleService,
+    private validationService: ValidationService
+  ) {}
 
   ngOnInit(): void {
     this.cargarClientes();
@@ -63,25 +71,45 @@ export class ClientesComponent implements OnInit {
   }
 
   mostrarFormulario(): void {
+    if (!this.validationService.canPerformOperation('create', 'clientes')) {
+      return;
+    }
+    
     this.mostrarForm = true;
     this.clienteEditando = null;
     this.cliente = this.nuevoCliente();
   }
 
   editarCliente(cliente: Cliente): void {
+    if (!this.validationService.canPerformOperation('update', 'clientes')) {
+      return;
+    }
+    
     this.clienteEditando = cliente;
     this.cliente = {...cliente};
     this.mostrarForm = true;
   }
 
   guardarCliente(): void {
+    // Validar campos requeridos
+    if (!this.validationService.validateRequiredFields(this.cliente, ['nombre'])) {
+      return;
+    }
+
+    // Validar email si se proporciona
+    if (this.cliente.email && !this.validationService.validateEmail(this.cliente.email)) {
+      return;
+    }
+
     if (this.clienteEditando) {
-  this.http.put<Cliente>(`${environment.apiUrl}/clientes/${this.clienteEditando.id}`, this.cliente)
+      // Actualizar cliente existente
+      this.http.put<Cliente>(`${environment.apiUrl}/clientes/${this.clienteEditando.id}`, this.cliente)
         .subscribe({
           next: (clienteActualizado) => {
             const index = this.clientes.findIndex(c => c.id === clienteActualizado.id);
             if (index !== -1) this.clientes[index] = clienteActualizado;
             this.filtrarClientes();
+            this.validationService.showSuccessMessage('update', 'Cliente', clienteActualizado.nombre);
             this.cancelarEdicion();
           },
           error: (error) => {
@@ -93,11 +121,13 @@ export class ClientesComponent implements OnInit {
           }
         });
     } else {
-  this.http.post<Cliente>(`${environment.apiUrl}/clientes`, this.cliente)
+      // Crear nuevo cliente
+      this.http.post<Cliente>(`${environment.apiUrl}/clientes`, this.cliente)
         .subscribe({
           next: (nuevoCliente) => {
             this.clientes.push(nuevoCliente);
             this.filtrarClientes();
+            this.validationService.showSuccessMessage('create', 'Cliente', nuevoCliente.nombre);
             this.cancelarEdicion();
           },
           error: (error) => {
@@ -113,11 +143,18 @@ export class ClientesComponent implements OnInit {
 
   eliminarCliente(id: number): void {
     if (!id) return;
-    if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
-  this.http.delete(`${environment.apiUrl}/clientes/${id}`).subscribe({
+    
+    if (!this.validationService.canPerformOperation('delete', 'clientes')) {
+      return;
+    }
+
+    const cliente = this.clientes.find(c => c.id === id);
+    if (confirm(`¿Está seguro de que desea eliminar el cliente "${cliente?.nombre} ${cliente?.apellido || ''}"?`)) {
+      this.http.delete(`${environment.apiUrl}/clientes/${id}`).subscribe({
         next: () => {
           this.clientes = this.clientes.filter(c => c.id !== id);
           this.filtrarClientes();
+          this.validationService.showSuccessMessage('delete', 'Cliente', cliente?.nombre);
         },
         error: (error) => {
           console.error('Error al eliminar cliente:', error);

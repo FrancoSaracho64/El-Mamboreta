@@ -4,6 +4,9 @@ import {Router} from '@angular/router';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from '@angular/forms';
 import {environment} from '../../environments/environment';
+import {NotificationService} from '../services/notification.service';
+import {RoleService} from '../services/role.service';
+import {ValidationService} from '../services/validation.service';
 
 interface Producto {
   id?: number;
@@ -21,7 +24,6 @@ interface Producto {
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css']
 })
-
 export class ProductosComponent implements OnInit {
   productos: Producto[] = [];
   productosFiltrados: Producto[] = [];
@@ -37,8 +39,13 @@ export class ProductosComponent implements OnInit {
   productoEditando: Producto | null = null;
   terminoBusqueda = '';
 
-  constructor(private http: HttpClient, private router: Router) {
-  }
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private notificationService: NotificationService,
+    public roleService: RoleService,
+    private validationService: ValidationService
+  ) {}
 
   ngOnInit(): void {
     this.cargarProductos();
@@ -77,6 +84,14 @@ export class ProductosComponent implements OnInit {
   }
 
   mostrarFormulario(): void {
+    if (!this.roleService.isAdmin()) {
+      this.notificationService.error(
+        'Acceso Denegado',
+        'Solo los administradores pueden crear productos'
+      );
+      return;
+    }
+    
     this.mostrarForm = true;
     this.productoEditando = null;
     this.producto = {
@@ -89,6 +104,14 @@ export class ProductosComponent implements OnInit {
   }
 
   editarProducto(producto: Producto): void {
+    if (!this.roleService.isAdmin()) {
+      this.notificationService.error(
+        'Acceso Denegado',
+        'Solo los administradores pueden editar productos'
+      );
+      return;
+    }
+    
     this.productoEditando = producto;
     this.producto = {...producto};
     this.mostrarForm = true;
@@ -105,11 +128,14 @@ export class ProductosComponent implements OnInit {
               this.productos[index] = productoActualizado;
               this.filtrarProductos();
             }
+            this.notificationService.success(
+              'Producto Actualizado',
+              `El producto "${productoActualizado.nombre}" se actualizó correctamente`
+            );
             this.cancelarEdicion();
           },
           error: (error) => {
             console.error('Error al actualizar producto:', error);
-            // Simular actualización local para desarrollo
             const index = this.productos.findIndex(p => p.id === this.productoEditando?.id);
             if (index !== -1) {
               this.productos[index] = {...this.producto, id: this.productoEditando?.id};
@@ -125,11 +151,14 @@ export class ProductosComponent implements OnInit {
           next: (nuevoProducto) => {
             this.productos.push(nuevoProducto);
             this.filtrarProductos();
+            this.notificationService.success(
+              'Producto Creado',
+              `El producto "${nuevoProducto.nombre}" se creó correctamente`
+            );
             this.cancelarEdicion();
           },
           error: (error) => {
             console.error('Error al crear producto:', error);
-            // Simular creación local para desarrollo
             const nuevoId = Math.max(...this.productos.map(p => p.id || 0)) + 1;
             const nuevoProducto = {...this.producto, id: nuevoId};
             this.productos.push(nuevoProducto);
@@ -141,16 +170,28 @@ export class ProductosComponent implements OnInit {
   }
 
   eliminarProducto(id: number): void {
-    if (confirm('¿Está seguro de que desea eliminar este producto?')) {
+    if (!this.roleService.isAdmin()) {
+      this.notificationService.error(
+        'Acceso Denegado',
+        'Solo los administradores pueden eliminar productos'
+      );
+      return;
+    }
+
+    const producto = this.productos.find(p => p.id === id);
+    if (confirm(`¿Está seguro de que desea eliminar el producto "${producto?.nombre}"?`)) {
       this.http.delete(`${environment.apiUrl}/productos/${id}`)
         .subscribe({
           next: () => {
             this.productos = this.productos.filter(p => p.id !== id);
             this.filtrarProductos();
+            this.notificationService.success(
+              'Producto Eliminado',
+              `El producto "${producto?.nombre}" se eliminó correctamente`
+            );
           },
           error: (error) => {
             console.error('Error al eliminar producto:', error);
-            // Simular eliminación local para desarrollo
             this.productos = this.productos.filter(p => p.id !== id);
             this.filtrarProductos();
           }
@@ -184,5 +225,17 @@ export class ProductosComponent implements OnInit {
 
   volverAlMenu(): void {
     this.router.navigate(['/home']);
+  }
+
+  getEmojiForRoute(route: string): string {
+    switch (route) {
+      case '/clientes': return '👥';
+      case '/productos': return '📦';
+      case '/pedidos': return '📋';
+      case '/materia-prima': return '🔧';
+      case '/ventas': return '💰';
+      case '/stock': return '📈';
+      default: return '📊';
+    }
   }
 }

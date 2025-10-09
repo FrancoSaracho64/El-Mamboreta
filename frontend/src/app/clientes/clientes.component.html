@@ -1,54 +1,139 @@
-<div class="container">
-  <div class="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
-    <h1 style="font-size: 2rem; font-weight: 700;">👥 Gestión de Clientes</h1>
-    <button class="btn" (click)="mostrarFormulario()">+ Nuevo Cliente</button>
+<div class="clientes-container">
+  <!-- Header con título y botón de acción -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="page-title">
+        <span class="material-icons title-icon">group</span>
+        Gestión de Clientes
+      </h1>
+      <p class="page-subtitle">Administra la información de tus clientes</p>
+    </div>
+    
+    <button 
+      class="fab-button" 
+      (click)="mostrarFormulario()"
+      [disabled]="!roleService.isAdmin()"
+    >
+      <span class="material-icons">person_add</span>
+      Nuevo Cliente
+    </button>
   </div>
 
   <!-- Formulario de Cliente -->
-  <div class="card" *ngIf="mostrarForm" style="margin-bottom: 2rem;">
-    <h3 style="margin-top: 0;">{{ clienteEditando ? 'Editar Cliente' : 'Nuevo Cliente' }}</h3>
-    <form (ngSubmit)="guardarCliente()" #clienteForm="ngForm" style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
-      <div style="flex: 1 1 220px; min-width: 220px;">
-        <label>Nombre *</label>
-        <input type="text" [(ngModel)]="cliente.nombre" name="nombre" required>
+  <div class="form-card" *ngIf="mostrarForm">
+    <div class="form-header">
+      <h2 class="form-title">
+        <span class="material-icons">{{ clienteEditando ? 'edit' : 'person_add' }}</span>
+        {{ clienteEditando ? 'Editar Cliente' : 'Nuevo Cliente' }}
+      </h2>
+    </div>
+    
+    <form (ngSubmit)="guardarCliente()" #clienteForm="ngForm" class="client-form">
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Nombre *</label>
+          <input 
+            type="text" 
+            class="material-input" 
+            [(ngModel)]="cliente.nombre" 
+            name="nombre" 
+            required
+            placeholder="Ingresa el nombre del cliente"
+          >
+        </div>
+        
+        <div class="form-field">
+          <label class="field-label">Apellido</label>
+          <input 
+            type="text" 
+            class="material-input" 
+            [(ngModel)]="cliente.apellido" 
+            name="apellido"
+            placeholder="Ingresa el apellido"
+          >
+        </div>
+        
+        <div class="form-field">
+          <label class="field-label">Email</label>
+          <input 
+            type="email" 
+            class="material-input" 
+            [(ngModel)]="cliente.email" 
+            name="email"
+            placeholder="cliente@email.com"
+          >
+        </div>
       </div>
-      <div style="flex: 1 1 180px; min-width: 180px;">
-        <label>Apellido</label>
-        <input type="text" [(ngModel)]="cliente.apellido" name="apellido">
+      
+      <div class="form-field full-width">
+        <label class="field-label">Dirección</label>
+        <textarea 
+          class="material-textarea" 
+          [(ngModel)]="cliente.direccion" 
+          name="direccion" 
+          rows="2"
+          placeholder="Dirección completa del cliente..."
+        ></textarea>
       </div>
-      <div style="flex: 1 1 220px; min-width: 220px;">
-        <label>Email</label>
-        <input type="email" [(ngModel)]="cliente.email" name="email">
+      
+      <div class="form-field full-width">
+        <label class="field-label">Observaciones</label>
+        <textarea 
+          class="material-textarea" 
+          [(ngModel)]="cliente.observaciones" 
+          name="observaciones" 
+          rows="3"
+          placeholder="Notas adicionales sobre el cliente..."
+        ></textarea>
       </div>
-      <div style="flex: 1 1 300px; min-width: 220px;">
-        <label>Dirección</label>
-        <textarea [(ngModel)]="cliente.direccion" name="direccion" rows="2"></textarea>
-      </div>
-      <div style="flex: 2 1 300px; min-width: 220px;">
-        <label>Observaciones</label>
-        <textarea [(ngModel)]="cliente.observaciones" name="observaciones" rows="2"></textarea>
-      </div>
-      <div style="flex: 1 1 100%; display: flex; gap: 1rem; margin-top: 1rem;">
-        <button type="submit" class="btn" [disabled]="!clienteForm.valid">
+      
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="primary-button" 
+          [disabled]="!clienteForm.valid"
+        >
+          <span class="material-icons">{{ clienteEditando ? 'update' : 'save' }}</span>
           {{ clienteEditando ? 'Actualizar' : 'Guardar' }}
         </button>
-        <button type="button" class="btn" style="background: #fff; color: var(--active-pink); border: 1px solid var(--active-pink);" (click)="cancelarEdicion()">Cancelar</button>
+        <button 
+          type="button" 
+          class="secondary-button" 
+          (click)="cancelarEdicion()"
+        >
+          <span class="material-icons">cancel</span>
+          Cancelar
+        </button>
       </div>
     </form>
   </div>
 
   <!-- Lista de Clientes -->
-  <div class="card">
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
-      <input type="text" placeholder="Buscar clientes..." [(ngModel)]="terminoBusqueda" (input)="filtrarClientes()" style="max-width: 250px;">
+  <div class="table-card">
+    <div class="table-header">
+      <h3 class="table-title">
+        <span class="material-icons">list</span>
+        Lista de Clientes
+      </h3>
+      
+      <div class="search-container">
+        <span class="material-icons search-icon">search</span>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Buscar clientes..." 
+          [(ngModel)]="terminoBusqueda" 
+          (input)="filtrarClientes()"
+        >
+      </div>
     </div>
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse;">
+    
+    <div class="table-container">
+      <table class="clients-table">
         <thead>
-          <tr style="background: var(--accent-pink); color: var(--text-main);">
-            <th style="padding: 0.75em 0.5em;">ID</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
             <th>Email</th>
             <th>Dirección</th>
             <th>Estado</th>
@@ -56,37 +141,63 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cliente of clientesFiltrados" style="border-bottom: 1px solid var(--accent-pink);">
-            <td>{{ cliente.id }}</td>
-            <td>{{ cliente.nombre }}</td>
-            <td>{{ cliente.apellido }}</td>
-            <td>{{ cliente.email }}</td>
-            <td>{{ cliente.direccion }}</td>
-            <td>
-              <span [ngStyle]="{
-                'padding': '0.25em 0.75em',
-                'border-radius': '8px',
-                'font-weight': '600',
-                'background': cliente.activo ? 'var(--accent-pink)' : '#eee',
-                'color': cliente.activo ? 'var(--text-main)' : '#888'
-              }">
+          <tr *ngFor="let cliente of clientesFiltrados" class="table-row">
+            <td class="id-cell">{{ cliente.id }}</td>
+            <td class="name-cell">
+              <div class="client-info">
+                <span class="client-name">{{ cliente.nombre }} {{ cliente.apellido }}</span>
+                <span class="client-registration" *ngIf="cliente.fechaRegistro">
+                  Registrado: {{ cliente.fechaRegistro | date:'dd/MM/yyyy' }}
+                </span>
+              </div>
+            </td>
+            <td class="email-cell">
+              <span class="email-text">{{ cliente.email || 'Sin email' }}</span>
+            </td>
+            <td class="address-cell">
+              <span class="address-text">{{ cliente.direccion || 'Sin dirección' }}</span>
+            </td>
+            <td class="status-cell">
+              <span class="status-badge" [ngClass]="{'active': cliente.activo, 'inactive': !cliente.activo}">
+                <span class="material-icons status-icon">
+                  {{ cliente.activo ? 'check_circle' : 'cancel' }}
+                </span>
                 {{ cliente.activo ? 'Activo' : 'Inactivo' }}
               </span>
             </td>
-            <td style="display: flex; gap: 0.5em;">
-              <button class="btn" style="padding: 0.3em 0.8em; font-size: 1.1em;" (click)="editarCliente(cliente)">✏️</button>
-              <button class="btn" style="padding: 0.3em 0.8em; font-size: 1.1em; background: #fff; color: #d32f2f; border: 1px solid #d32f2f;" (click)="eliminarCliente(cliente.id!)">🗑️</button>
+            <td class="actions-cell">
+              <button 
+                class="action-button edit-button" 
+                (click)="editarCliente(cliente)"
+                title="Editar cliente"
+              >
+                <span class="material-icons">edit</span>
+              </button>
+              <button 
+                class="action-button delete-button" 
+                (click)="eliminarCliente(cliente.id!)"
+                title="Eliminar cliente"
+              >
+                <span class="material-icons">delete</span>
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div *ngIf="clientesFiltrados.length === 0" style="padding: 2em; text-align: center; color: #888;">
-      No se encontraron clientes
+    
+    <div *ngIf="clientesFiltrados.length === 0" class="empty-state">
+      <span class="material-icons empty-icon">group</span>
+      <h3>No se encontraron clientes</h3>
+      <p>{{ terminoBusqueda ? 'Intenta con otros términos de búsqueda' : 'Comienza agregando tu primer cliente' }}</p>
     </div>
   </div>
 
-  <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
-    <button class="btn" style="background: #fff; color: var(--active-pink); border: 1px solid var(--active-pink);" (click)="volverAlMenu()">← Volver al Menú</button>
+  <!-- Botón de navegación -->
+  <div class="navigation-section">
+    <button class="back-button" (click)="volverAlMenu()">
+      <span class="material-icons">arrow_back</span>
+      Volver al Menú
+    </button>
   </div>
 </div>

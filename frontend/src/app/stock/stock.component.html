@@ -1,16 +1,119 @@
 <div class="stock-container">
-  <h2>Cargar Stock de Productos</h2>
-  <form (ngSubmit)="cargarStock()">
-    <label for="producto">Producto:</label>
-    <select id="producto" [(ngModel)]="selectedProductoId" name="producto" required>
-      <option [ngValue]="null">Selecciona un producto</option>
-      <option *ngFor="let producto of productos" [ngValue]="producto.id">
-        {{ producto.nombre }} (Stock actual: {{ producto.stock }})
-      </option>
-    </select>
-    <label for="cantidad">Cantidad a agregar:</label>
-    <input id="cantidad" type="number" [(ngModel)]="cantidad" name="cantidad" min="1" required>
-    <button type="submit">Listo</button>
-    <div *ngIf="mensaje" class="mensaje">{{ mensaje }}</div>
-  </form>
+  <!-- Header con título -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="page-title">
+        <span class="material-icons title-icon">store</span>
+        Gestión de Stock
+      </h1>
+      <p class="page-subtitle">Controla y actualiza el inventario de productos</p>
+    </div>
+  </div>
+
+  <!-- Formulario de carga de stock -->
+  <div class="form-card">
+    <div class="form-header">
+      <h2 class="form-title">
+        <span class="material-icons">add_box</span>
+        Cargar Stock
+      </h2>
+    </div>
+    
+    <form (ngSubmit)="cargarStock()" #stockForm="ngForm" class="stock-form">
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">Seleccionar Producto *</label>
+          <select 
+            class="material-select" 
+            [(ngModel)]="selectedProductoId" 
+            name="producto" 
+            required
+          >
+            <option [ngValue]="null">-- Selecciona un producto --</option>
+            <option *ngFor="let producto of productos" [ngValue]="producto.id">
+              {{ producto.nombre }} (Stock: {{ producto.stock }})
+            </option>
+          </select>
+        </div>
+        
+        <div class="form-field">
+          <label class="field-label">Cantidad a Agregar *</label>
+          <input 
+            type="number" 
+            class="material-input" 
+            [(ngModel)]="cantidad" 
+            name="cantidad" 
+            min="1" 
+            required
+            placeholder="Ingresa la cantidad"
+            [disabled]="loading"
+          >
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="primary-button" 
+          [disabled]="!stockForm.valid || loading"
+        >
+          <span class="material-icons" *ngIf="!loading">add</span>
+          <span class="material-icons loading-spinner" *ngIf="loading">hourglass_empty</span>
+          {{ loading ? 'Actualizando...' : 'Cargar Stock' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de productos con stock -->
+  <div class="products-card">
+    <div class="products-header">
+      <h3 class="products-title">
+        <span class="material-icons">inventory</span>
+        Estado del Inventario
+      </h3>
+    </div>
+    
+    <div class="products-grid">
+      <div 
+        *ngFor="let producto of productos" 
+        class="product-card"
+        [ngClass]="'stock-' + getStockStatus(producto.stock)"
+      >
+        <div class="product-header">
+          <h4 class="product-name">{{ producto.nombre }}</h4>
+          <span class="material-icons stock-icon">
+            {{ getStockStatus(producto.stock) === 'low' ? 'warning' : 
+               getStockStatus(producto.stock) === 'medium' ? 'info' : 'check_circle' }}
+          </span>
+        </div>
+        
+        <div class="product-stock">
+          <span class="stock-label">Stock Actual</span>
+          <span class="stock-value">{{ producto.stock }}</span>
+        </div>
+        
+        <div class="stock-status">
+          <span class="status-text">
+            {{ getStockStatus(producto.stock) === 'low' ? 'Stock Bajo' : 
+               getStockStatus(producto.stock) === 'medium' ? 'Stock Medio' : 'Stock Alto' }}
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <div *ngIf="productos.length === 0" class="empty-state">
+      <span class="material-icons empty-icon">inventory_2</span>
+      <h3>No hay productos disponibles</h3>
+      <p>No se encontraron productos en el sistema</p>
+    </div>
+  </div>
+
+  <!-- Botón de navegación -->
+  <div class="navigation-section">
+    <button class="back-button" (click)="volverAlMenu()">
+      <span class="material-icons">arrow_back</span>
+      Volver al Menú
+    </button>
+  </div>
 </div>
