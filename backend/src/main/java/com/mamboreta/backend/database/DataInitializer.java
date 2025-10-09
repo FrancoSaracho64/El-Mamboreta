@@ -13,9 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Esta clase de configuración se encarga de inicializar la base de datos
@@ -41,53 +39,45 @@ public class DataInitializer {
             // Creamos los productos usando el constructor sin argumentos y los setters,
             // lo que es compatible con tu clase Producto anotada con Lombok.
             List<Producto> productos = new ArrayList<>();
-            Producto producto1 = new Producto();
-            producto1.setNombre("Miel de abeja");
-            producto1.setPrecio(15.50);
-            productos.add(producto1);
-
-            Producto producto2 = new Producto();
-            producto2.setNombre("Pan integral");
-            producto2.setPrecio(5.25);
-            productos.add(producto2);
-
-            Producto producto3 = new Producto();
-            producto3.setNombre("Huevos de campo");
-            producto3.setPrecio(8.00);
-            productos.add(producto3);
-
-            Producto producto4 = new Producto();
-            producto4.setNombre("Tangram");
-            producto4.setPrecio(1054.00);
-            productos.add(producto4);
-
-            Producto producto5 = new Producto();
-            producto5.setNombre("Enhebrado");
-            producto5.setPrecio(640.00);
-            productos.add(producto5);
-
-            Producto producto6 = new Producto();
-            producto6.setNombre("PescaMagic");
-            producto6.setPrecio(500.00);
-            productos.add(producto6);
-
-            Producto producto7 = new Producto();
-            producto7.setNombre("TaTeTi");
-            producto7.setPrecio(2500.00);
-            producto7.setStock(150);
-            productos.add(producto7);
+            productos.add(new Producto(null, "PESCAMAGIC + LAGO", 700.0, null, true, null, 0));
+            productos.add(new Producto(null, "PESCAMAGIC", 700.0, null, true, null, 0));
+            productos.add(new Producto(null, "TANGRAM CUADRADO", 1300.0, null, true, null, 0));
+            productos.add(new Producto(null, "TANGRAM TABLETA", 1000.0, null, true, null, 0));
+            productos.add(new Producto(null, "ENHEBRADOS SIMPLES", 830.0, null, true, null, 0));
+            productos.add(new Producto(null, "ENHEBRADO GRABADO", 1080.0, null, true, null, 0));
+            productos.add(new Producto(null, "ENHEBRADOS FORMIS", 760.0, null, true, null, 0));
+            productos.add(new Producto(null, "TETRIS", 1300.0, null, true, null, 0));
+            productos.add(new Producto(null, "ATRAPAMOSCAS", 1260.0, null, true, null, 0));
+            productos.add(new Producto(null, "TA-TE-TI MDF", 750.0, null, true, null, 0));
+            productos.add(new Producto(null, "TÍTERE DEDO MDF", 680.0, null, true, null, 0));
+            productos.add(new Producto(null, "TRABADOS", 850.0, null, true, null, 0));
+            productos.add(new Producto(null, "TA-TE-TI FICHA G.E.", 560.0, null, true, null, 0));
+            productos.add(new Producto(null, "MEMOTEST", 950.0, null, true, null, 0));
 
             // Guardamos todos los productos en una sola llamada, que es más eficiente.
             productoRepository.saveAll(productos);
 
-            Cliente cliente = new Cliente();
-            cliente.setNombre("Franco");
-            cliente.setApellido("Saracho");
-            cliente.setEmail("fmsaracho64@gmail.com");
-            cliente.setDireccion("Salta 2060");
-            cliente.setObservaciones("Desarrollador de esta app B)");
+            List<String> nombres = List.of("Lucas", "Martina", "Sofía", "Juan", "Lucía", "Pedro", "Ana", "Franco", "Julieta", "Marcos",
+                    "Valentina", "Mateo", "Carla", "Nicolás", "Camila", "Tomás", "Mía", "Joaquín", "Rocío", "Diego");
+            List<String> apellidos = List.of("Gómez", "Pérez", "Rodríguez", "Fernández", "López", "Martínez", "García", "Romero", "Sánchez", "Díaz");
 
-            clienteRepository.save(cliente);
+            Random random = new Random();
+            List<Cliente> clientes = new ArrayList<>();
+
+            for (int i = 1; i <= 50; i++) {
+                Cliente cliente = new Cliente();
+                String nombre = nombres.get(random.nextInt(nombres.size()));
+                String apellido = apellidos.get(random.nextInt(apellidos.size()));
+                cliente.setNombre(nombre);
+                cliente.setApellido(apellido);
+                cliente.setEmail(nombre.toLowerCase() + "." + apellido.toLowerCase() + i + "@correo.com");
+                cliente.setDireccion("Calle " + (100 + i) + ", Ciudad " + (random.nextInt(10) + 1));
+                cliente.setActivo(true);
+                cliente.setObservaciones("Cliente generado automáticamente para pruebas (" + UUID.randomUUID().toString().substring(0, 8) + ")");
+                clientes.add(cliente);
+            }
+
+            clienteRepository.saveAll(clientes);
 
             // Alta de usuarios iniciales
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

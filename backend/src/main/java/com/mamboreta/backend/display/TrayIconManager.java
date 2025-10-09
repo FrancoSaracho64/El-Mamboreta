@@ -73,7 +73,7 @@ public class TrayIconManager {
         } catch (Exception ignored) {
         }
 
-        JFrame frame = new JFrame("El Mamboreta");
+        JFrame frame = new JFrame("El Mamboretá");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(360, 420);
         frame.setLayout(new BorderLayout(10, 10));

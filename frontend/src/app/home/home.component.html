@@ -3,9 +3,9 @@
   <div class="header-section">
     <h1 class="main-title">
       <span class="material-icons title-icon">business</span>
-      El Mamboreta - Sistema de Gestión
+      El Mamboretá - Sistema de Gestión
     </h1>
-    
+
     <div class="user-welcome" *ngIf="userRole">
       <div class="user-card">
         <span class="material-icons user-icon">account_circle</span>
@@ -19,8 +19,8 @@
 
   <!-- Grid de opciones del menú -->
   <div class="menu-grid">
-    <div 
-      *ngFor="let option of menuOptions" 
+    <div
+      *ngFor="let option of menuOptions"
       class="menu-card material-card"
       (click)="navegarA(option.route.substring(1))"
       [attr.data-route]="option.route"
@@ -29,11 +29,11 @@
         <span class="material-icons card-icon">{{ option.icon }}</span>
         <h3 class="card-title">{{ option.label }}</h3>
       </div>
-      
+
       <div class="card-content">
         <p class="card-description">{{ option.description }}</p>
       </div>
-      
+
       <div class="card-actions">
         <button class="action-button" type="button">
           <span class="material-icons">arrow_forward</span>

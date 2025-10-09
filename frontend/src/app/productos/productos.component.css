@@ -161,6 +161,7 @@
 .input-prefix {
   position: absolute;
   left: 16px;
+  top: 18px;
   color: #666;
   font-weight: 500;
   z-index: 1;
@@ -501,7 +502,7 @@
   .form-row {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .search-input {
     width: 250px;
   }
@@ -511,48 +512,48 @@
   .productos-container {
     padding: 16px;
   }
-  
+
   .header-section {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
   }
-  
+
   .page-title {
     font-size: 2rem;
     justify-content: center;
   }
-  
+
   .page-subtitle {
     text-align: center;
   }
-  
+
   .fab-button {
     justify-content: center;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .product-form {
     padding: 24px;
   }
-  
+
   .table-header {
     flex-direction: column;
     gap: 16px;
     align-items: stretch;
   }
-  
+
   .search-input {
     width: 100%;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .primary-button, .secondary-button {
     justify-content: center;
   }
@@ -564,24 +565,24 @@
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .title-icon {
     font-size: 2.5rem !important;
   }
-  
+
   .products-table {
     font-size: 0.85rem;
   }
-  
+
   .products-table th,
   .products-table td {
     padding: 12px 8px;
   }
-  
+
   .description-text {
     max-width: 120px;
   }
-  
+
   .actions-cell {
     flex-direction: column;
     gap: 4px;
