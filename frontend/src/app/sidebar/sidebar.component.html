@@ -1,4 +1,9 @@
 <div class="sidebar-overlay" *ngIf="expanded" (click)="toggleSidebar()"></div>
+
+<button *ngIf="!expanded" class="mobile-menu-btn" (click)="toggleSidebar()">
+  <span class="material-icons">menu</span>
+</button>
+
 <nav class="sidebar" [class.expanded]="expanded">
   <div class="sidebar-header">
     <button class="toggle-btn" (click)="toggleSidebar()">

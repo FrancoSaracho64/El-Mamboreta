@@ -3,7 +3,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 .home-container {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 24px;
   font-family: 'Roboto', sans-serif;
@@ -47,7 +46,7 @@
   background: white;
   padding: 20px 32px;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-left: 4px solid #4caf50;
 }
 
@@ -82,7 +81,7 @@
 .material-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -90,13 +89,13 @@
 }
 
 .material-card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   transform: translateY(-4px);
 }
 
 .material-card:active {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Card Header */
@@ -184,7 +183,7 @@
   grid-column: 1 / -1;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-left: 4px solid #ff9800;
 }
 
@@ -218,34 +217,34 @@
   .home-container {
     padding: 16px;
   }
-  
+
   .main-title {
     font-size: 2rem;
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .title-icon {
     font-size: 2.5rem !important;
   }
-  
+
   .user-card {
     padding: 16px 24px;
   }
-  
+
   .menu-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .card-header {
     padding: 20px 20px 12px 20px;
   }
-  
+
   .card-content {
     padding: 12px 20px;
   }
-  
+
   .card-actions {
     padding: 12px 20px 20px 20px;
   }
@@ -255,19 +254,19 @@
   .main-title {
     font-size: 1.75rem;
   }
-  
+
   .user-card {
     flex-direction: column;
     text-align: center;
     gap: 12px;
   }
-  
+
   .card-header {
     flex-direction: column;
     text-align: center;
     gap: 12px;
   }
-  
+
   .card-title {
     font-size: 1.3rem;
   }

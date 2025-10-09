@@ -1,10 +1,12 @@
 <app-sidebar #sidebar></app-sidebar>
-<div class="main-content">
-  <button class="mobile-menu-btn" (click)="sidebar.toggleSidebar()">
-    <span class="material-icons">menu</span>
-  </button>
+
+<div class="main-content" *ngIf="!sidebar.isMobile"
+     [ngStyle]="{'margin-left': sidebar.expanded ? '220px' : '70px'}">
   <router-outlet></router-outlet>
 </div>
 
-<!-- Componente de notificaciones flotantes -->
+<div class="main-content" *ngIf="sidebar.isMobile">
+  <router-outlet></router-outlet>
+</div>
+
 <app-notification></app-notification>

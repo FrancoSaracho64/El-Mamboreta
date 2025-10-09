@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {AuthService} from '../auth.service';
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,10 @@ export class LoginComponent {
   password = '';
   error = '';
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private router: Router) {
+    if (authService.isLoggedIn()){
+      this.router.navigate(['/home']);
+    }
   }
 
   login() {

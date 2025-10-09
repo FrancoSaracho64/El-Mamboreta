@@ -7,6 +7,16 @@
   --card-shadow: 0 2px 8px rgba(244,143,177,0.08);
   --border-radius: 14px;
   --transition: .25s cubic-bezier(.4,0,.2,1);
+
+  --sidebar-bg: #ffe4ef;
+  --sidebar-hover: #f8bbd0;
+  --sidebar-active: #f48fb1;
+  --sidebar-text: #ad1457;
+  --sidebar-width: 60px;
+  --sidebar-width-expanded: 220px;
+  --sidebar-overlay: rgba(255, 228, 239, 0.75);
+
+
 }
 
 body {
@@ -17,24 +27,6 @@ body {
   height: 100vh;
   overflow: hidden;
   letter-spacing: 0.01em;
-}
-
-@media (min-width: 769px) {
-  .main-content {
-    margin-left: 220px;
-    padding: 2rem;
-    height: 100vh;
-    overflow-y: auto;
-    transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
-  }
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    padding: 1rem;
-    height: 100vh;
-    overflow-y: auto;
-  }
 }
 
 .container {
